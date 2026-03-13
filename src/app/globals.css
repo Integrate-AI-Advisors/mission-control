@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dark-bg: #1a1a19;
+  --dark-surface: #232322;
+  --dark-card: #2a2a28;
+  --dark-border: rgba(250, 249, 245, 0.08);
+  --terra: #d97757;
+  --terra-light: #e08a6a;
+  --terra-dark: #c06545;
+  --green: #22c55e;
+  --green-glow: rgba(34, 197, 94, 0.15);
+  --green-text: #4ade80;
+  --amber: #f59e0b;
+  --amber-glow: rgba(245, 158, 11, 0.12);
+  --amber-text: #facc15;
+  --text-primary: #faf9f5;
+  --text-secondary: rgba(250, 249, 245, 0.72);
+  --text-muted: rgba(250, 249, 245, 0.40);
+  --text-dim: #b0aea5;
+}
+
+html {
+  background: var(--dark-bg);
+  color: var(--text-primary);
+}
+
+body {
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(250, 249, 245, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(250, 249, 245, 0.2);
+}
