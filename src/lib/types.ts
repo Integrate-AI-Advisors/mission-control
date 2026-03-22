@@ -1,23 +1,29 @@
+export type AgentTier = "executive" | "core" | "specialist" | "contractor";
+export type AgentStatus = "Working" | "Available" | "Queued" | "Off";
+export type Executive = "ceo" | "cmo" | "cto" | "coo" | "cfo" | "cco" | "discovery";
+
 export interface Agent {
   id: string;
   name: string;
   role: string;
-  identityName: string;
   avatar: string;
   model: string;
+  modelTier: string;
   tools: string[];
-  software: SoftwareItem[];
-  capabilities: string[];
   skills: Skill[];
   status: AgentStatus;
   lastActive: string | null;
   monthlyCost: number;
-  discordChannelId: string | null;
+  tier: AgentTier;
+  parent: Executive | null;
+  slackChannelUrl: string | null;
 }
 
-export interface SoftwareItem {
-  name: string;
-  status: "connected" | "needs-setup" | "pending";
+export interface ExecutiveGroup {
+  executive: Agent;
+  subAgents: Agent[];
+  totalCost: number;
+  activeCount: number;
 }
 
 export interface Skill {
@@ -25,8 +31,6 @@ export interface Skill {
   description: string;
   version: string;
 }
-
-export type AgentStatus = "Working" | "Available" | "Queued" | "Off";
 
 export interface CostData {
   totalMonth: number;

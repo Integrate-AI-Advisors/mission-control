@@ -3,6 +3,7 @@ import type { AgentStatus, GatewayState } from "./types";
 
 const GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || "http://localhost:18789";
 const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
+const NVM_PREFIX = 'export NVM_DIR="/root/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && ';
 
 interface SessionData {
   agentId?: string;
@@ -37,23 +38,28 @@ export async function getSessions(): Promise<SessionData[]> {
     });
     if (!res.ok) return [];
     const data = await res.json();
-    // OpenClaw wraps response: { ok, result: { details: { sessions: [...] } } }
-    const sessions = data?.result?.details?.sessions
-      || data?.result?.sessions
-      || data?.sessions
-      || (Array.isArray(data) ? data : []);
+    const sessions =
+      data?.result?.details?.sessions ||
+      data?.result?.sessions ||
+      data?.sessions ||
+      (Array.isArray(data) ? data : []);
     return Array.isArray(sessions) ? sessions : [];
   } catch {
     return [];
   }
 }
 
-export async function deriveAgentStatuses(): Promise<Record<string, { status: AgentStatus; lastActive: string | null }>> {
+export async function deriveAgentStatuses(): Promise<
+  Record<string, { status: AgentStatus; lastActive: string | null }>
+> {
   const healthy = await getGatewayHealth();
   if (!healthy) return {};
 
   const sessions = await getSessions();
-  const result: Record<string, { status: AgentStatus; lastActive: string | null }> = {};
+  const result: Record<
+    string,
+    { status: AgentStatus; lastActive: string | null }
+  > = {};
   const now = Date.now();
   const fiveMinAgo = now - 5 * 60 * 1000;
 
@@ -74,7 +80,8 @@ export async function deriveAgentStatuses(): Promise<Record<string, { status: Ag
       status = "Queued";
     }
 
-    const lastActive = lastUpdated > 0 ? formatRelativeTime(lastUpdated, now) : null;
+    const lastActive =
+      lastUpdated > 0 ? formatRelativeTime(lastUpdated, now) : null;
     result[agentId] = { status, lastActive };
   }
 
@@ -94,9 +101,10 @@ function formatRelativeTime(timestamp: number, now: number): string {
 
 export function stopGateway(): GatewayState {
   try {
-    execSync("openclaw gateway stop </dev/null", {
+    execSync(`${NVM_PREFIX} openclaw gateway stop </dev/null`, {
       timeout: 15_000,
       stdio: ["pipe", "pipe", "pipe"],
+      shell: "/bin/bash",
     });
     return { running: false };
   } catch {
@@ -106,9 +114,10 @@ export function stopGateway(): GatewayState {
 
 export function startGateway(): GatewayState {
   try {
-    execSync("openclaw gateway start </dev/null", {
+    execSync(`${NVM_PREFIX} openclaw gateway start </dev/null`, {
       timeout: 15_000,
       stdio: ["pipe", "pipe", "pipe"],
+      shell: "/bin/bash",
     });
     return { running: true };
   } catch {

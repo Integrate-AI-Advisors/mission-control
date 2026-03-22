@@ -1,32 +1,22 @@
-import type { SoftwareItem } from "@/lib/types";
+// Tools list — shows agent tools as simple badges
+export default function ToolsList({ tools }: { tools: string[] }) {
+  if (!tools || tools.length === 0) return null;
 
-const statusDot: Record<SoftwareItem["status"], string> = {
-  connected: "bg-status-green",
-  pending: "bg-status-amber",
-  "needs-setup": "bg-text-dim",
-};
-
-const statusTooltip: Record<SoftwareItem["status"], string> = {
-  connected: "Connected",
-  pending: "Account created, needs connecting",
-  "needs-setup": "Needs setup",
-};
-
-export default function SoftwareStack({ items }: { items: SoftwareItem[] }) {
   return (
     <div className="flex flex-wrap gap-1.5">
-      {items.map((item) => (
+      {tools.slice(0, 8).map((tool) => (
         <span
-          key={item.name}
-          className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded border border-dark-border bg-dark-surface text-text-secondary"
-          title={`${item.name}: ${statusTooltip[item.status]}`}
+          key={tool}
+          className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded border border-dark-border bg-dark-surface text-text-secondary"
         >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${statusDot[item.status]}`}
-          />
-          {item.name}
+          {tool}
         </span>
       ))}
+      {tools.length > 8 && (
+        <span className="text-[10px] font-mono text-text-muted px-1">
+          +{tools.length - 8} more
+        </span>
+      )}
     </div>
   );
 }

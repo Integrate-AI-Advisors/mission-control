@@ -6,35 +6,6 @@ interface SetupTask {
   priority: "high" | "medium" | "low";
 }
 
-// Hardcoded founder-only tasks (remove as completed)
-const FOUNDER_TASKS: SetupTask[] = [
-  {
-    label: "Create LinkedIn Company Page",
-    detail: "Blocks Social Media Manager + Sales Rep",
-    priority: "high",
-  },
-  {
-    label: "Create Facebook Business Page",
-    detail: "Blocks Social Media Manager",
-    priority: "high",
-  },
-  {
-    label: "Set up Canva team account",
-    detail: "Blocks Content Creator + Social Media Manager",
-    priority: "medium",
-  },
-  {
-    label: "Set up Google Docs workspace",
-    detail: "Blocks Strategist",
-    priority: "medium",
-  },
-  {
-    label: "Enable Discord bot intents",
-    detail: "Required for avatar + presence features",
-    priority: "low",
-  },
-];
-
 const priorityDot: Record<SetupTask["priority"], string> = {
   high: "bg-red-400",
   medium: "bg-amber-400",
@@ -42,44 +13,40 @@ const priorityDot: Record<SetupTask["priority"], string> = {
 };
 
 export default function SetupChecklist({ agents }: { agents: Agent[] }) {
-  // Derive tasks from software with needs-setup or pending status
-  const softwareTasks: SetupTask[] = [];
-  const seen = new Set<string>();
+  const tasks: SetupTask[] = [];
 
-  for (const agent of agents) {
-    for (const sw of agent.software) {
-      if (sw.status === "connected") continue;
-      const key = `${sw.name}-${sw.status}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-
-      // Find all employees affected
-      const affected = agents
-        .filter((a) => a.software.some((s) => s.name === sw.name && s.status === sw.status))
-        .map((a) => a.name);
-
-      softwareTasks.push({
-        label: sw.status === "pending"
-          ? `Connect ${sw.name}`
-          : `Set up ${sw.name}`,
-        detail: `Needed by ${affected.join(", ")}`,
-        priority: affected.length >= 2 ? "high" : "medium",
-      });
-    }
+  // Check for agents with no skills
+  const noSkills = agents.filter(
+    (a) => a.tier === "executive" && a.skills.length === 0
+  );
+  if (noSkills.length > 0) {
+    tasks.push({
+      label: "Deploy executive skills",
+      detail: `Missing for: ${noSkills.map((a) => a.id.toUpperCase()).join(", ")}`,
+      priority: "high",
+    });
   }
 
-  // Merge: use software-derived tasks (deduped against founder tasks by label keyword)
-  const founderFiltered = FOUNDER_TASKS.filter(
-    (ft) => !softwareTasks.some((st) => ft.label.toLowerCase().includes(st.label.replace(/^(Set up|Connect)\s+/i, "").toLowerCase()))
+  // Check for offline executives
+  const offExecs = agents.filter(
+    (a) => a.tier === "executive" && a.status === "Off"
   );
+  if (offExecs.length > 0 && offExecs.length < agents.filter((a) => a.tier === "executive").length) {
+    tasks.push({
+      label: "Some executives are offline",
+      detail: `${offExecs.map((a) => a.id.toUpperCase()).join(", ")} not responding`,
+      priority: "medium",
+    });
+  }
 
-  const allTasks = [...softwareTasks, ...founderFiltered];
+  // Slack setup reminder
+  tasks.push({
+    label: "Configure Slack bot tokens",
+    detail: "Set SLACK_BOT_TOKEN_CMO + SLACK_APP_TOKEN_CMO on VPS",
+    priority: "medium",
+  });
 
-  if (allTasks.length === 0) return null;
-
-  // Sort: high first, then medium, then low
-  const order = { high: 0, medium: 1, low: 2 };
-  allTasks.sort((a, b) => order[a.priority] - order[b.priority]);
+  if (tasks.length === 0) return null;
 
   return (
     <div className="bg-dark-surface border border-dark-border rounded-card p-4">
@@ -88,11 +55,11 @@ export default function SetupChecklist({ agents }: { agents: Agent[] }) {
           Setup Required
         </h2>
         <span className="font-mono text-[11px] text-text-muted">
-          {allTasks.length} {allTasks.length === 1 ? "task" : "tasks"}
+          {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
         </span>
       </div>
       <ul className="space-y-2">
-        {allTasks.map((task) => (
+        {tasks.map((task) => (
           <li key={task.label} className="flex items-start gap-2.5">
             <span
               className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${priorityDot[task.priority]}`}

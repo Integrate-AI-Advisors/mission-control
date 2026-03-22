@@ -2,18 +2,39 @@ import { readdirSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import yaml from "js-yaml";
 import type { Skill } from "./types";
+import { isExecutive, getParentExecutive } from "./hierarchy";
 
-const BASE_PATH = process.env.OPENCLAW_BASE_PATH || "/root/.openclaw";
+// Skills live at /root/openclaw/workspace-{executive}/skills/{skill-name}/SKILL.md
+const SKILLS_ROOT = process.env.OPENCLAW_SKILLS_ROOT || "/root/openclaw";
 
 export function getSkillsForAgent(agentId: string): Skill[] {
-  const skillsDir = join(BASE_PATH, `workspace-${agentId}`, "skills");
+  // Determine which workspace to look in
+  let workspaceOwner: string;
+  if (isExecutive(agentId)) {
+    workspaceOwner = agentId;
+  } else {
+    const parent = getParentExecutive(agentId);
+    if (!parent) return [];
+    workspaceOwner = parent;
+  }
+
+  const skillsDir = join(SKILLS_ROOT, `workspace-${workspaceOwner}`, "skills");
   if (!existsSync(skillsDir)) return [];
 
+  // For executives, return all skills in their workspace
+  // For sub-agents, return only skills matching their ID
   const skills: Skill[] = [];
   try {
     const dirs = readdirSync(skillsDir, { withFileTypes: true });
     for (const dir of dirs) {
       if (!dir.isDirectory()) continue;
+
+      // For sub-agents, only include their specific skill
+      if (!isExecutive(agentId)) {
+        const dirName = dir.name.replace(/-skill$/, "");
+        if (dirName !== agentId) continue;
+      }
+
       const skillFile = join(skillsDir, dir.name, "SKILL.md");
       if (!existsSync(skillFile)) continue;
 

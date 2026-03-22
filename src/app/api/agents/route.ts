@@ -13,8 +13,11 @@ export async function GET() {
     const costs = getCosts();
 
     const agents: Agent[] = baseAgents.map((a) => {
-      const statusInfo = statuses[a.id] || { status: "Idle" as const, lastActive: null };
-      const monthlyCost = costs.byAgent[a.id] || costs.byAgent[a.identityName] || 0;
+      const statusInfo = statuses[a.id] || {
+        status: "Available" as const,
+        lastActive: null,
+      };
+      const monthlyCost = costs.byAgent[a.id] || costs.byAgent[a.name] || 0;
       return {
         ...a,
         status: statusInfo.status,
@@ -26,6 +29,18 @@ export async function GET() {
     return NextResponse.json({ agents, costs });
   } catch (error) {
     console.error("Error fetching agents:", error);
-    return NextResponse.json({ agents: [], costs: { totalMonth: 0, byAgent: {}, byModel: {}, callCount: 0 } }, { status: 500 });
+    return NextResponse.json(
+      {
+        agents: [],
+        costs: {
+          totalMonth: 0,
+          estimatedMonth: 0,
+          byAgent: {},
+          byModel: {},
+          callCount: 0,
+        },
+      },
+      { status: 500 }
+    );
   }
 }
