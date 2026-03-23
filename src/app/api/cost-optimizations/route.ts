@@ -99,12 +99,16 @@ export async function GET() {
     const agents = getAgents();
     const checks: OptimizationCheck[] = [];
 
-    // Workspace paths — executives use /root/openclaw/workspace-{id}
+    // Workspace paths — read from config's agents.list[].workspace field
+    const agentsList = (getNestedValue(config, "agents.list") || []) as Array<{ id: string; workspace: string }>;
     const execIds = agents.filter((a) => isExecutive(a.id)).map((a) => a.id);
-    const allWorkspaces = execIds.map((id) => ({
-      id,
-      path: join(SKILLS_ROOT, `workspace-${id}`),
-    }));
+    const allWorkspaces = execIds.map((id) => {
+      const configAgent = agentsList.find((a) => a.id === id);
+      // Use workspace from config, fall back to common patterns
+      const wsPath = configAgent?.workspace
+        || `/root/openclaw-clients/integrateai/workspace-${id}`;
+      return { id, path: wsPath };
+    });
 
     // ─────────────────────────────────────────────
     // SECTION 1: COST OPTIMIZATION
