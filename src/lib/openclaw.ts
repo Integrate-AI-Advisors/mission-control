@@ -85,6 +85,11 @@ export function getAgents(): Omit<Agent, "status" | "lastActive" | "monthlyCost"
     const parent = getParentExecutive(agent.id);
     const tier = deriveTier(agent.id, modelRaw);
 
+    // Agents with 4h+ heartbeat are on standby (not continuously active)
+    const hbEvery = agent.heartbeat?.every || "4h";
+    const hbHours = parseInt(hbEvery) || 4;
+    const isStandby = hbHours >= 4;
+
     return {
       id: agent.id,
       name: agent.identity?.name || agent.name,
@@ -97,6 +102,7 @@ export function getAgents(): Omit<Agent, "status" | "lastActive" | "monthlyCost"
       tier,
       parent,
       slackChannelUrl: null, // Populated later from gateway session data
+      isStandby,
     };
   });
 }

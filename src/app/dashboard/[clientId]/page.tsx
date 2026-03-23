@@ -1,7 +1,10 @@
 import Sidebar from "@/components/Sidebar";
 import ExecutiveCard from "@/components/ExecutiveCard";
 import MetricsBar from "@/components/MetricsBar";
+import CostAlert from "@/components/CostAlert";
+import CostOptimizations from "@/components/CostOptimizations";
 import KillSwitch from "@/components/KillSwitch";
+import SetupChecklist from "@/components/SetupChecklist";
 import { getAgents, getSlackEnabled } from "@/lib/openclaw";
 import { deriveAgentStatuses, getGatewayHealth } from "@/lib/gateway";
 import { getCosts } from "@/lib/langfuse";
@@ -26,9 +29,13 @@ export default async function DashboardPage({
   const slackEnabled = getSlackEnabled();
 
   const agents: Agent[] = baseAgents.map((a) => {
-    const statusInfo = gatewayRunning
+    let statusInfo = gatewayRunning
       ? statuses[a.id] || { status: "Available" as const, lastActive: null }
       : { status: "Off" as const, lastActive: null };
+    // Standby agents show as "Standby" unless actively working
+    if (a.isStandby && statusInfo.status === "Available") {
+      statusInfo = { status: "Standby" as const, lastActive: statusInfo.lastActive };
+    }
     const monthlyCost =
       costs.byAgent[a.id] || costs.byAgent[a.name] || 0;
     return {
@@ -60,6 +67,7 @@ export default async function DashboardPage({
           tier: "executive" as const,
           parent: null,
           slackChannelUrl: null,
+          isStandby: false,
         },
         subAgents: [],
         totalCost: 0,
@@ -78,7 +86,6 @@ export default async function DashboardPage({
   });
 
   const totalAgents = agents.length;
-  const workingCount = agents.filter((a) => a.status === "Working").length;
 
   return (
     <div className="flex min-h-screen">
@@ -108,6 +115,11 @@ export default async function DashboardPage({
           <KillSwitch initialState={gatewayRunning} />
         </div>
 
+        {/* Cost Alert Banner */}
+        <div className="mb-4">
+          <CostAlert costs={costs} />
+        </div>
+
         {/* Metrics */}
         <div className="mb-6">
           <MetricsBar
@@ -115,6 +127,16 @@ export default async function DashboardPage({
             costs={costs}
             gatewayRunning={gatewayRunning}
           />
+        </div>
+
+        {/* Setup Checklist */}
+        <div className="mb-6">
+          <SetupChecklist agents={agents} />
+        </div>
+
+        {/* Cost Optimizations */}
+        <div className="mb-6">
+          <CostOptimizations />
         </div>
 
         {/* Executive Groups */}

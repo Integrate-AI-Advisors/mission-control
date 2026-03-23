@@ -6,6 +6,18 @@ const SCRIPT_PATH = process.env.USAGE_REPORT_SCRIPT || "/root/.openclaw/scripts/
 let costCache: { data: CostData; ts: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+function runUsageReport(period: string): Record<string, unknown> | null {
+  try {
+    const output = execSync(`bash ${SCRIPT_PATH} ${period} --json`, {
+      timeout: 30_000,
+      encoding: "utf-8",
+    });
+    return JSON.parse(output);
+  } catch {
+    return null;
+  }
+}
+
 export function getCosts(): CostData {
   const now = Date.now();
   if (costCache && now - costCache.ts < CACHE_TTL) {
@@ -13,40 +25,43 @@ export function getCosts(): CostData {
   }
 
   try {
-    const output = execSync(`bash ${SCRIPT_PATH} --month --json`, {
-      timeout: 30_000,
-      encoding: "utf-8",
-    });
+    const monthData = runUsageReport("--month");
+    const todayData = runUsageReport("--today");
 
-    const parsed = JSON.parse(output);
+    const parsed = monthData || { total: {}, agents: {}, models: {}, hourly: {} };
+    const todayCost = (todayData?.total as { cost_usd?: number })?.cost_usd || 0;
+
     // Script outputs: { total: { cost_usd, calls }, agents: { id: { cost_usd } }, models: { name: cost } }
     const byAgent: Record<string, number> = {};
-    if (parsed.agents) {
-      for (const [id, info] of Object.entries(parsed.agents)) {
-        byAgent[id] = (info as { cost_usd: number }).cost_usd || 0;
+    const agents = parsed.agents as Record<string, { cost_usd?: number }> | undefined;
+    if (agents) {
+      for (const [id, info] of Object.entries(agents)) {
+        byAgent[id] = info.cost_usd || 0;
       }
     }
     // Calculate 30-day estimate from hourly data
     let estimatedMonth = 0;
-    const hourly: Record<string, number> = parsed.hourly || {};
+    const hourly: Record<string, number> = (parsed.hourly as Record<string, number>) || {};
     const hours = Object.keys(hourly).sort();
     if (hours.length >= 2) {
       const first = new Date(hours[0].replace(" ", "T") + ":00Z").getTime();
       const last = new Date(hours[hours.length - 1].replace(" ", "T") + ":00Z").getTime();
       const hoursElapsed = Math.max(1, (last - first) / 3600000 + 1);
-      const costPerHour = (parsed.total?.cost_usd || 0) / hoursElapsed;
+      const totalCost = (parsed.total as { cost_usd?: number })?.cost_usd || 0;
+      const costPerHour = totalCost / hoursElapsed;
       // Assume 12 active hours/day (07:00–19:00)
       estimatedMonth = costPerHour * 12 * 30;
     } else {
-      estimatedMonth = parsed.total?.cost_usd || 0;
+      estimatedMonth = (parsed.total as { cost_usd?: number })?.cost_usd || 0;
     }
 
     const data: CostData = {
-      totalMonth: parsed.total?.cost_usd || 0,
+      totalMonth: (parsed.total as { cost_usd?: number })?.cost_usd || 0,
       estimatedMonth,
+      todayCost,
       byAgent,
-      byModel: parsed.models || {},
-      callCount: parsed.total?.calls || 0,
+      byModel: (parsed.models as Record<string, number>) || {},
+      callCount: (parsed.total as { calls?: number })?.calls || 0,
     };
 
     costCache = { data, ts: now };
@@ -56,6 +71,7 @@ export function getCosts(): CostData {
     return {
       totalMonth: 0,
       estimatedMonth: 0,
+      todayCost: 0,
       byAgent: {},
       byModel: {},
       callCount: 0,
