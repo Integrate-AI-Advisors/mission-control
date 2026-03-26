@@ -18,6 +18,7 @@ export async function getGatewayHealth(gw: GatewayConfig): Promise<boolean> {
   try {
     const res = await fetch(`${gw.url}/health`, {
       cache: "no-store",
+      headers: gw.token ? { Authorization: `Bearer ${gw.token}` } : {},
       signal: AbortSignal.timeout(5000),
     });
     return res.ok;
@@ -54,29 +55,33 @@ export async function getSessions(gw: GatewayConfig): Promise<SessionData[]> {
 
 export async function getAgentConfig(gw: GatewayConfig): Promise<unknown | null> {
   if (!gw.url) return null;
+  const authHeaders: Record<string, string> = gw.token ? { Authorization: `Bearer ${gw.token}` } : {};
   try {
-    const res = await fetch(`${gw.url}/tools/invoke`, {
+    // Primary: read config from canvas static file
+    const res = await fetch(`${gw.url}/__openclaw__/canvas/openclaw-config.json`, {
+      cache: "no-store",
+      headers: authHeaders,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.agents?.list) return data;
+    }
+
+    // Fallback: try tools/invoke
+    const toolRes = await fetch(`${gw.url}/tools/invoke`, {
       method: "POST",
       cache: "no-store",
-      headers: {
-        ...(gw.token ? { Authorization: `Bearer ${gw.token}` } : {}),
-        "Content-Type": "application/json",
-      },
+      headers: { ...authHeaders, "Content-Type": "application/json" },
       body: JSON.stringify({ tool: "config_get", args: {} }),
       signal: AbortSignal.timeout(10000),
     });
-    if (!res.ok) {
-      // Fallback: try the /config endpoint directly
-      const fallback = await fetch(`${gw.url}/config`, {
-        cache: "no-store",
-        headers: gw.token ? { Authorization: `Bearer ${gw.token}` } : {},
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!fallback.ok) return null;
-      return await fallback.json();
+    if (toolRes.ok) {
+      const data = await toolRes.json();
+      return data?.result || data;
     }
-    const data = await res.json();
-    return data?.result || data;
+
+    return null;
   } catch {
     return null;
   }
