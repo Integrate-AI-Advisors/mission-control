@@ -30,13 +30,19 @@ function LoginContent() {
       <div className="w-full max-w-sm mx-4">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-dark-surface border border-dark-border flex items-center justify-center shadow-panel">
-            <svg viewBox="0 0 32 32" className="w-10 h-10">
-              <rect width="32" height="32" rx="8" fill="#1a1a19" />
-              <circle cx="8" cy="11" r="3" fill="#d97757" />
-              <circle cx="18" cy="11" r="3" fill="#d97757" opacity="0.4" />
-              <circle cx="8" cy="21" r="3" fill="#d97757" opacity="0.2" />
-              <circle cx="18" cy="21" r="3" fill="#d97757" />
+          <div className="w-20 h-20 rounded-2xl bg-[#1a1614] flex items-center justify-center shadow-panel">
+            <svg viewBox="0 0 64 64" className="w-16 h-16">
+              <rect width="64" height="64" rx="14" fill="#1a1614" />
+              {/* Row 1 */}
+              <circle cx="14" cy="22" r="5.5" fill="#d4845a" />
+              <circle cx="26" cy="22" r="5.5" fill="#4a2e24" />
+              <circle cx="38" cy="22" r="5.5" fill="#6b3d2e" />
+              <circle cx="50" cy="22" r="5.5" fill="#d4845a" />
+              {/* Row 2 */}
+              <circle cx="14" cy="40" r="5.5" fill="#4a2e24" />
+              <circle cx="26" cy="40" r="5.5" fill="#d4845a" />
+              <circle cx="38" cy="40" r="5.5" fill="#d4845a" />
+              <circle cx="50" cy="40" r="5.5" fill="#6b3d2e" />
             </svg>
           </div>
         </div>
