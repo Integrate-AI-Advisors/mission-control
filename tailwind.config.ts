@@ -39,8 +39,8 @@ const config: Config = {
         cream: "#faf9f5",
       },
       fontFamily: {
-        serif: ["Lora", "Georgia", "serif"],
-        sans: ["DM Sans", "system-ui", "sans-serif"],
+        serif: ["DM Serif Display", "Georgia", "serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       borderRadius: {
@@ -55,14 +55,29 @@ const config: Config = {
           "0%, 100%": { boxShadow: "0 0 8px rgba(34, 197, 94, 0.15)" },
           "50%": { boxShadow: "0 0 14px rgba(34, 197, 94, 0.30)" },
         },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(217, 119, 87, 0.08)" },
+          "50%": { boxShadow: "0 0 40px rgba(217, 119, 87, 0.2)" },
+        },
+        breathe: {
+          "0%, 100%": { opacity: "0.5" },
+          "50%": { opacity: "1" },
+        },
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(40px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
         "pulse-green": "pulse-green 2s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        breathe: "breathe 3s ease-in-out infinite",
         "fade-in": "fade-in 0.4s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
     },
   },
