@@ -38,9 +38,6 @@ export default async function DashboardPage({
 
   const hasGateway = !!gw.url;
 
-  // Debug logging for gateway connectivity
-  console.log(`[dashboard] client=${clientId} gateway_url=${gw.url} has_token=${!!gw.token} hasGateway=${hasGateway}`);
-
   // Fetch data from client's gateway
   const [baseAgents, statuses, gatewayRunning, slackEnabled] = await Promise.all([
     getAgents(gw),
@@ -48,8 +45,6 @@ export default async function DashboardPage({
     hasGateway ? getGatewayHealth(gw) : Promise.resolve(false),
     getSlackEnabled(gw),
   ]);
-
-  console.log(`[dashboard] agents=${baseAgents.length} gatewayRunning=${gatewayRunning} slackEnabled=${slackEnabled}`);
 
   // Costs: for now, zero — per-client cost tracking comes in Sprint 2+
   const costs: CostData = {
