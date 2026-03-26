@@ -58,13 +58,17 @@ export async function getAgentConfig(gw: GatewayConfig): Promise<unknown | null>
   const authHeaders: Record<string, string> = gw.token ? { Authorization: `Bearer ${gw.token}` } : {};
   try {
     // Primary: read config from canvas static file
-    const res = await fetch(`${gw.url}/__openclaw__/canvas/openclaw-config.json`, {
+    const configUrl = `${gw.url}/__openclaw__/canvas/openclaw-config.json`;
+    console.log(`[gateway] fetching config from ${configUrl}`);
+    const res = await fetch(configUrl, {
       cache: "no-store",
       headers: authHeaders,
       signal: AbortSignal.timeout(10000),
     });
+    console.log(`[gateway] config response: ${res.status} ${res.statusText}`);
     if (res.ok) {
       const data = await res.json();
+      console.log(`[gateway] config has agents.list: ${!!data?.agents?.list}, count: ${data?.agents?.list?.length || 0}`);
       if (data?.agents?.list) return data;
     }
 
@@ -76,13 +80,15 @@ export async function getAgentConfig(gw: GatewayConfig): Promise<unknown | null>
       body: JSON.stringify({ tool: "config_get", args: {} }),
       signal: AbortSignal.timeout(10000),
     });
+    console.log(`[gateway] tools/invoke response: ${toolRes.status}`);
     if (toolRes.ok) {
       const data = await toolRes.json();
       return data?.result || data;
     }
 
     return null;
-  } catch {
+  } catch (err) {
+    console.error(`[gateway] getAgentConfig error:`, err);
     return null;
   }
 }
