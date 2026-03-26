@@ -1,23 +1,33 @@
-import { NextResponse } from "next/server";
-import { startGateway, stopGateway, getGatewayHealth } from "@/lib/gateway";
+import { NextRequest, NextResponse } from "next/server";
+import { controlGateway, getGatewayHealth } from "@/lib/gateway";
+import type { GatewayConfig } from "@/lib/gateway";
+import { getClient } from "@/lib/clients";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const running = await getGatewayHealth();
+async function gwFromRequest(request: NextRequest): Promise<GatewayConfig> {
+  const clientSlug = request.nextUrl.searchParams.get("client") || "integrateai";
+  const client = await getClient(clientSlug);
+  return {
+    url: client?.gateway_url || process.env.OPENCLAW_GATEWAY_URL || "",
+    token: client?.gateway_token || process.env.OPENCLAW_GATEWAY_TOKEN || "",
+  };
+}
+
+export async function GET(request: NextRequest) {
+  const gw = await gwFromRequest(request);
+  const running = await getGatewayHealth(gw);
   return NextResponse.json({ running });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const gw = await gwFromRequest(request);
     const body = await request.json();
     const action = body.action;
 
-    if (action === "stop") {
-      const result = stopGateway();
-      return NextResponse.json(result);
-    } else if (action === "start") {
-      const result = startGateway();
+    if (action === "stop" || action === "start") {
+      const result = await controlGateway(gw, action);
       return NextResponse.json(result);
     }
 

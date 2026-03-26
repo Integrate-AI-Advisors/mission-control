@@ -1,9 +1,10 @@
-import { execSync } from "child_process";
 import type { AgentStatus, GatewayState } from "./types";
 
-const GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || "http://localhost:18789";
-const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
-const NVM_PREFIX = 'export NVM_DIR="/root/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && ';
+/** Per-client gateway connection config */
+export interface GatewayConfig {
+  url: string;
+  token: string;
+}
 
 interface SessionData {
   agentId?: string;
@@ -12,9 +13,10 @@ interface SessionData {
   state?: string;
 }
 
-export async function getGatewayHealth(): Promise<boolean> {
+export async function getGatewayHealth(gw: GatewayConfig): Promise<boolean> {
+  if (!gw.url) return false;
   try {
-    const res = await fetch(`${GATEWAY_URL}/health`, {
+    const res = await fetch(`${gw.url}/health`, {
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     });
@@ -24,13 +26,14 @@ export async function getGatewayHealth(): Promise<boolean> {
   }
 }
 
-export async function getSessions(): Promise<SessionData[]> {
+export async function getSessions(gw: GatewayConfig): Promise<SessionData[]> {
+  if (!gw.url) return [];
   try {
-    const res = await fetch(`${GATEWAY_URL}/tools/invoke`, {
+    const res = await fetch(`${gw.url}/tools/invoke`, {
       method: "POST",
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${GATEWAY_TOKEN}`,
+        ...(gw.token ? { Authorization: `Bearer ${gw.token}` } : {}),
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ tool: "sessions_list", args: {} }),
@@ -49,13 +52,43 @@ export async function getSessions(): Promise<SessionData[]> {
   }
 }
 
-export async function deriveAgentStatuses(): Promise<
-  Record<string, { status: AgentStatus; lastActive: string | null }>
-> {
-  const healthy = await getGatewayHealth();
+export async function getAgentConfig(gw: GatewayConfig): Promise<unknown | null> {
+  if (!gw.url) return null;
+  try {
+    const res = await fetch(`${gw.url}/tools/invoke`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        ...(gw.token ? { Authorization: `Bearer ${gw.token}` } : {}),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tool: "config_get", args: {} }),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) {
+      // Fallback: try the /config endpoint directly
+      const fallback = await fetch(`${gw.url}/config`, {
+        cache: "no-store",
+        headers: gw.token ? { Authorization: `Bearer ${gw.token}` } : {},
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!fallback.ok) return null;
+      return await fallback.json();
+    }
+    const data = await res.json();
+    return data?.result || data;
+  } catch {
+    return null;
+  }
+}
+
+export async function deriveAgentStatuses(
+  gw: GatewayConfig
+): Promise<Record<string, { status: AgentStatus; lastActive: string | null }>> {
+  const healthy = await getGatewayHealth(gw);
   if (!healthy) return {};
 
-  const sessions = await getSessions();
+  const sessions = await getSessions(gw);
   const result: Record<
     string,
     { status: AgentStatus; lastActive: string | null }
@@ -99,28 +132,14 @@ function formatRelativeTime(timestamp: number, now: number): string {
   return `${days}d ago`;
 }
 
-export function stopGateway(): GatewayState {
-  try {
-    execSync(`${NVM_PREFIX} openclaw gateway stop </dev/null`, {
-      timeout: 15_000,
-      stdio: ["pipe", "pipe", "pipe"],
-      shell: "/bin/bash",
-    });
-    return { running: false };
-  } catch {
-    return { running: true };
-  }
-}
-
-export function startGateway(): GatewayState {
-  try {
-    execSync(`${NVM_PREFIX} openclaw gateway start </dev/null`, {
-      timeout: 15_000,
-      stdio: ["pipe", "pipe", "pipe"],
-      shell: "/bin/bash",
-    });
-    return { running: true };
-  } catch {
-    return { running: false };
-  }
+export async function controlGateway(
+  gw: GatewayConfig,
+  action: "start" | "stop"
+): Promise<GatewayState> {
+  // Gateway start/stop is only possible on the VPS itself.
+  // For now, we just report inability to control remote gateways.
+  // Future: SSH-based or API-based control.
+  console.warn(`Gateway ${action} requested for ${gw.url} — remote control not yet implemented`);
+  const running = await getGatewayHealth(gw);
+  return { running };
 }

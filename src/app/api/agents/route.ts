@@ -1,16 +1,34 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAgents } from "@/lib/openclaw";
 import { deriveAgentStatuses } from "@/lib/gateway";
-import { getCosts } from "@/lib/langfuse";
-import type { Agent } from "@/lib/types";
+import type { GatewayConfig } from "@/lib/gateway";
+import { getClient } from "@/lib/clients";
+import type { Agent, CostData } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const baseAgents = getAgents();
-    const statuses = await deriveAgentStatuses();
-    const costs = getCosts();
+    const clientSlug = request.nextUrl.searchParams.get("client") || "integrateai";
+    const client = await getClient(clientSlug);
+
+    const gw: GatewayConfig = {
+      url: client?.gateway_url || process.env.OPENCLAW_GATEWAY_URL || "",
+      token: client?.gateway_token || process.env.OPENCLAW_GATEWAY_TOKEN || "",
+    };
+
+    const baseAgents = await getAgents(gw);
+    const statuses = gw.url ? await deriveAgentStatuses(gw) : {};
+
+    // Costs: stub for now
+    const costs: CostData = {
+      totalMonth: 0,
+      estimatedMonth: 0,
+      todayCost: 0,
+      byAgent: {},
+      byModel: {},
+      callCount: 0,
+    };
 
     const agents: Agent[] = baseAgents.map((a) => {
       const statusInfo = statuses[a.id] || {
@@ -18,12 +36,7 @@ export async function GET() {
         lastActive: null,
       };
       const monthlyCost = costs.byAgent[a.id] || costs.byAgent[a.name] || 0;
-      return {
-        ...a,
-        status: statusInfo.status,
-        lastActive: statusInfo.lastActive,
-        monthlyCost,
-      };
+      return { ...a, status: statusInfo.status, lastActive: statusInfo.lastActive, monthlyCost };
     });
 
     return NextResponse.json({ agents, costs });
@@ -35,6 +48,7 @@ export async function GET() {
         costs: {
           totalMonth: 0,
           estimatedMonth: 0,
+          todayCost: 0,
           byAgent: {},
           byModel: {},
           callCount: 0,

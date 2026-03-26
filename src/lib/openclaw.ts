@@ -1,9 +1,7 @@
-import { readFileSync } from "fs";
 import type { Agent, AgentTier } from "./types";
-import { getSkillsForAgent } from "./skills";
 import { isExecutive, getParentExecutive } from "./hierarchy";
-
-const CONFIG_PATH = process.env.OPENCLAW_CONFIG_PATH || "/root/.openclaw/openclaw.json";
+import type { GatewayConfig } from "./gateway";
+import { getAgentConfig } from "./gateway";
 
 interface OpenClawAgent {
   id: string;
@@ -43,17 +41,26 @@ interface OpenClawConfig {
   };
 }
 
-let configCache: { data: OpenClawConfig; ts: number } | null = null;
+// Per-client config cache (keyed by gateway URL)
+const configCache = new Map<string, { data: OpenClawConfig; ts: number }>();
 const CACHE_TTL = 30_000;
 
-function readConfig(): OpenClawConfig {
+async function fetchConfig(gw: GatewayConfig): Promise<OpenClawConfig | null> {
+  const cacheKey = gw.url;
   const now = Date.now();
-  if (configCache && now - configCache.ts < CACHE_TTL) {
-    return configCache.data;
+  const cached = configCache.get(cacheKey);
+  if (cached && now - cached.ts < CACHE_TTL) {
+    return cached.data;
   }
-  const raw = readFileSync(CONFIG_PATH, "utf-8");
-  const data = JSON.parse(raw) as OpenClawConfig;
-  configCache = { data, ts: now };
+
+  const raw = await getAgentConfig(gw);
+  if (!raw) return null;
+
+  // The gateway may return the config directly or nested
+  const data = (raw as { config?: OpenClawConfig }).config || raw as OpenClawConfig;
+  if (!data.agents?.list) return null;
+
+  configCache.set(cacheKey, { data, ts: now });
   return data;
 }
 
@@ -71,21 +78,24 @@ function deriveTier(agentId: string, modelStr: string): AgentTier {
   return "contractor";
 }
 
-export function getAgents(): Omit<Agent, "status" | "lastActive" | "monthlyCost">[] {
-  const config = readConfig();
+export async function getAgents(
+  gw: GatewayConfig
+): Promise<Omit<Agent, "status" | "lastActive" | "monthlyCost">[]> {
+  const config = await fetchConfig(gw);
+  if (!config) return [];
+
   const globalAllow = config.tools?.sandbox?.tools?.allow || [];
 
   return config.agents.list.map((agent) => {
     const deny = agent.tools?.deny || [];
     const effectiveTools = globalAllow.filter((t) => !deny.includes(t));
-    const modelRaw = agent.model?.primary || config.agents.defaults.model.primary;
+    const modelRaw =
+      agent.model?.primary || config.agents.defaults.model.primary;
     const modelTier = deriveModelTier(modelRaw);
-    const skills = getSkillsForAgent(agent.id);
     const role = agent.name.replace(/\s*\(.*\)/, "");
     const parent = getParentExecutive(agent.id);
     const tier = deriveTier(agent.id, modelRaw);
 
-    // Agents with 4h+ heartbeat are on standby (not continuously active)
     const hbEvery = agent.heartbeat?.every || "4h";
     const hbHours = parseInt(hbEvery) || 4;
     const isStandby = hbHours >= 4;
@@ -94,23 +104,25 @@ export function getAgents(): Omit<Agent, "status" | "lastActive" | "monthlyCost"
       id: agent.id,
       name: agent.identity?.name || agent.name,
       role,
-      avatar: agent.identity?.avatar || `https://api.dicebear.com/7.x/initials/png?seed=${encodeURIComponent(agent.id)}&size=128`,
+      avatar:
+        agent.identity?.avatar ||
+        `https://api.dicebear.com/7.x/initials/png?seed=${encodeURIComponent(agent.id)}&size=128`,
       model: modelRaw.replace(/^.*\//, ""),
       modelTier,
       tools: effectiveTools,
-      skills,
+      skills: [], // Skills loaded from VPS — future: fetch via gateway
       tier,
       parent,
-      slackChannelUrl: null, // Populated later from gateway session data
+      slackChannelUrl: null,
       isStandby,
     };
   });
 }
 
-export function getSlackEnabled(): boolean {
+export async function getSlackEnabled(gw: GatewayConfig): Promise<boolean> {
   try {
-    const config = readConfig();
-    return config.channels?.slack?.enabled || false;
+    const config = await fetchConfig(gw);
+    return config?.channels?.slack?.enabled || false;
   } catch {
     return false;
   }
