@@ -19,52 +19,65 @@ function LoginContent() {
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
-          hd: "integrate-ai.uk", // Restrict Google picker to workspace domain
+          hd: "integrate-ai.uk",
         },
       },
     });
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-      <div className="w-full max-w-sm mx-4">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="w-20 h-20 rounded-2xl bg-[#1a1614] flex items-center justify-center shadow-panel">
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center relative overflow-hidden">
+      {/* Subtle terra gradient orb behind card */}
+      <div className="absolute w-[600px] h-[600px] rounded-full bg-terra/[0.03] blur-[120px] pointer-events-none" />
+
+      <div className="w-full max-w-sm mx-4 relative z-10">
+        {/* Dot Matrix Logo with breathing animation */}
+        <div className="flex justify-center mb-10">
+          <div className="w-20 h-20 rounded-2xl bg-[#1A1614] flex items-center justify-center shadow-panel">
             <svg viewBox="0 0 64 64" className="w-16 h-16">
-              <rect width="64" height="64" rx="14" fill="#1a1614" />
-              {/* Row 1 */}
-              <circle cx="14" cy="22" r="5.5" fill="#d4845a" />
-              <circle cx="26" cy="22" r="5.5" fill="#4a2e24" />
-              <circle cx="38" cy="22" r="5.5" fill="#6b3d2e" />
-              <circle cx="50" cy="22" r="5.5" fill="#d4845a" />
+              <rect width="64" height="64" rx="14" fill="#1A1614" />
+              {/* Row 1 — staggered breathing */}
+              <circle cx="14" cy="22" r="5.5" fill="#D97757" className="animate-breathe" style={{ animationDelay: "0s" }} />
+              <circle cx="26" cy="22" r="5.5" fill="#4A2E24" className="animate-breathe" style={{ animationDelay: "0.4s" }} />
+              <circle cx="38" cy="22" r="5.5" fill="#6B3D2E" className="animate-breathe" style={{ animationDelay: "0.8s" }} />
+              <circle cx="50" cy="22" r="5.5" fill="#D97757" className="animate-breathe" style={{ animationDelay: "1.2s" }} />
               {/* Row 2 */}
-              <circle cx="14" cy="40" r="5.5" fill="#4a2e24" />
-              <circle cx="26" cy="40" r="5.5" fill="#d4845a" />
-              <circle cx="38" cy="40" r="5.5" fill="#d4845a" />
-              <circle cx="50" cy="40" r="5.5" fill="#6b3d2e" />
+              <circle cx="14" cy="40" r="5.5" fill="#4A2E24" className="animate-breathe" style={{ animationDelay: "1.6s" }} />
+              <circle cx="26" cy="40" r="5.5" fill="#D97757" className="animate-breathe" style={{ animationDelay: "2.0s" }} />
+              <circle cx="38" cy="40" r="5.5" fill="#D97757" className="animate-breathe" style={{ animationDelay: "2.4s" }} />
+              <circle cx="50" cy="40" r="5.5" fill="#6B3D2E" className="animate-breathe" style={{ animationDelay: "2.8s" }} />
             </svg>
           </div>
         </div>
 
-        <h1 className="font-serif text-2xl font-bold text-text-primary text-center mb-2">
+        {/* Brand label */}
+        <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra text-center mb-3">
           Mission Control
-        </h1>
-        <p className="text-text-muted text-sm text-center mb-8 font-mono">
-          IntegrateAI Advisors
         </p>
 
+        {/* Heading — serif, never bold */}
+        <h1 className="font-serif text-[clamp(1.8rem,3.5vw,2.6rem)] text-text-primary text-center leading-[1.12]">
+          Integrate<span className="text-terra">AI</span>
+        </h1>
+
+        {/* Subtitle — serif italic */}
+        <p className="font-serif italic text-[0.95rem] text-text-muted text-center mt-2 mb-10">
+          Intelligence layers for business
+        </p>
+
+        {/* Error banner */}
         {error === "unauthorized" && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-6">
-            <p className="text-red-400 text-sm text-center">
+          <div className="bg-[rgba(194,91,86,0.08)] border border-brand-red/20 rounded-card px-4 py-3 mb-6">
+            <p className="text-brand-red text-sm text-center font-sans">
               Access restricted to @integrate-ai.uk accounts only.
             </p>
           </div>
         )}
 
+        {/* Sign in button */}
         <button
           onClick={signInWithGoogle}
-          className="w-full flex items-center justify-center gap-3 bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-text-primary hover:border-terra/30 hover:bg-dark-card transition-all"
+          className="w-full flex items-center justify-center gap-3 bg-dark-surface border border-dark-border rounded-card px-4 py-3.5 text-text-primary hover:border-terra/30 hover:bg-dark-card transition-all duration-300 group"
         >
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path
@@ -84,12 +97,20 @@ function LoginContent() {
               fill="#EA4335"
             />
           </svg>
-          <span className="text-sm font-medium">Sign in with Google</span>
+          <span className="text-sm font-medium font-sans">Sign in with Google</span>
         </button>
 
-        <p className="text-text-dim text-xs text-center mt-6 font-mono">
+        {/* Domain restriction note */}
+        <p className="font-mono text-[0.6rem] text-text-muted text-center mt-6 tracking-wide">
           @integrate-ai.uk accounts only
         </p>
+
+        {/* Dot divider */}
+        <div className="flex justify-center gap-2 mt-10">
+          <span className="w-1.5 h-1.5 rounded-full bg-terra/30 animate-dot-pulse" style={{ animationDelay: "0s" }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-terra/30 animate-dot-pulse" style={{ animationDelay: "0.3s" }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-terra/30 animate-dot-pulse" style={{ animationDelay: "0.6s" }} />
+        </div>
       </div>
     </div>
   );
@@ -97,11 +118,17 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <p className="text-text-muted">Loading...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+          <div className="flex gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-terra/50 animate-breathe" />
+            <span className="w-1.5 h-1.5 rounded-full bg-terra/50 animate-breathe" style={{ animationDelay: "0.5s" }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-terra/50 animate-breathe" style={{ animationDelay: "1s" }} />
+          </div>
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

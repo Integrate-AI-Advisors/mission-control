@@ -23,10 +23,10 @@ interface Summary {
 }
 
 const statusIcon: Record<CheckStatus, { icon: string; color: string; bg: string }> = {
-  pass: { icon: "✓", color: "text-[#4ade80]", bg: "bg-[rgba(34,197,94,0.12)]" },
-  fail: { icon: "✗", color: "text-red-400", bg: "bg-[rgba(239,68,68,0.12)]" },
-  warn: { icon: "!", color: "text-yellow-400", bg: "bg-[rgba(245,158,11,0.12)]" },
-  unknown: { icon: "?", color: "text-slate-400", bg: "bg-[rgba(148,163,184,0.12)]" },
+  pass: { icon: "\u2713", color: "text-brand-green", bg: "bg-[rgba(74,124,89,0.12)]" },
+  fail: { icon: "\u2717", color: "text-brand-red", bg: "bg-[rgba(194,91,86,0.12)]" },
+  warn: { icon: "!", color: "text-brand-amber", bg: "bg-[rgba(196,148,58,0.12)]" },
+  unknown: { icon: "?", color: "text-text-muted", bg: "bg-[rgba(154,149,144,0.12)]" },
 };
 
 const sectionOrder = [
@@ -56,7 +56,6 @@ export default function CostOptimizations() {
           const data = await res.json();
           setChecks(data.checks || []);
           setSummary(data.summary || null);
-          // Auto-expand sections with failures
           const failSections = new Set<string>();
           (data.checks || []).forEach((c: OptimizationCheck) => {
             if (c.status === "fail") failSections.add(c.section);
@@ -77,7 +76,7 @@ export default function CostOptimizations() {
       <div className="bg-dark-card border border-dark-border rounded-card p-5">
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-terra/30 border-t-terra rounded-full animate-spin" />
-          <span className="font-mono text-[12px] text-text-muted">Running optimization checks...</span>
+          <span className="font-mono text-[0.6rem] text-text-muted leading-[1.6]">Running optimization checks...</span>
         </div>
       </div>
     );
@@ -85,7 +84,6 @@ export default function CostOptimizations() {
 
   if (!summary || checks.length === 0) return null;
 
-  // Group checks by section
   const grouped: Record<string, OptimizationCheck[]> = {};
   for (const check of checks) {
     if (!grouped[check.section]) grouped[check.section] = [];
@@ -102,49 +100,51 @@ export default function CostOptimizations() {
   };
 
   const scoreColor =
-    summary.score >= 80 ? "text-[#4ade80]" : summary.score >= 50 ? "text-yellow-400" : "text-red-400";
+    summary.score >= 80 ? "text-brand-green" : summary.score >= 50 ? "text-brand-amber" : "text-brand-red";
+  const scoreBorder =
+    summary.score >= 80 ? "border-brand-green/30" : summary.score >= 50 ? "border-brand-amber/30" : "border-brand-red/30";
+  const scoreBar =
+    summary.score >= 80 ? "bg-brand-green" : summary.score >= 50 ? "bg-brand-amber" : "bg-brand-red";
 
   return (
     <div className="bg-dark-card border border-dark-border rounded-card overflow-hidden">
       {/* Header with score */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="w-full px-5 py-4 flex items-center justify-between hover:bg-dark-surface/50 transition-colors"
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-dark-surface/50 transition-colors duration-300"
       >
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-            summary.score >= 80 ? "border-[#4ade80]/30" : summary.score >= 50 ? "border-yellow-400/30" : "border-red-400/30"
-          }`}>
-            <span className={`font-serif text-[16px] font-bold ${scoreColor}`}>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${scoreBorder}`}>
+            <span className={`font-serif text-[16px] ${scoreColor}`}>
               {summary.score}
             </span>
           </div>
           <div className="text-left">
             <span className="font-sans text-[14px] font-semibold text-text-primary">
-              Elite Optimization Score
+              Optimization Score
             </span>
             <div className="flex items-center gap-3 mt-0.5">
-              <span className="font-mono text-[11px] text-[#4ade80]">
+              <span className="font-mono text-[0.6rem] text-brand-green">
                 {summary.pass} passed
               </span>
               {summary.fail > 0 && (
-                <span className="font-mono text-[11px] text-red-400">
+                <span className="font-mono text-[0.6rem] text-brand-red">
                   {summary.fail} failed
                 </span>
               )}
               {summary.warn > 0 && (
-                <span className="font-mono text-[11px] text-yellow-400">
+                <span className="font-mono text-[0.6rem] text-brand-amber">
                   {summary.warn} warnings
                 </span>
               )}
-              <span className="font-mono text-[11px] text-text-muted">
+              <span className="font-mono text-[0.6rem] text-text-muted">
                 {summary.total} checks
               </span>
             </div>
           </div>
         </div>
         <svg
-          className={`w-5 h-5 text-text-muted transition-transform ${collapsed ? "" : "rotate-180"}`}
+          className={`w-5 h-5 text-text-muted transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -156,18 +156,16 @@ export default function CostOptimizations() {
         </svg>
       </button>
 
-      {/* Score bar */}
+      {/* Score bar — 4px per brand spec */}
       {!collapsed && (
         <div className="px-5 pb-3">
-          <div className="w-full h-2 bg-dark-surface rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-dark-surface rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                summary.score >= 80 ? "bg-[#4ade80]" : summary.score >= 50 ? "bg-yellow-400" : "bg-red-400"
-              }`}
+              className={`h-full rounded-full transition-all duration-500 ${scoreBar}`}
               style={{ width: `${summary.score}%` }}
             />
           </div>
-          <p className="font-mono text-[10px] text-text-muted mt-1.5">
+          <p className="font-mono text-[0.5rem] text-text-muted mt-1.5 tracking-[0.06em]">
             Based on Elite Agent Optimization research (29 docs) &middot; Adapted for 108-agent C-Suite
           </p>
         </div>
@@ -186,24 +184,23 @@ export default function CostOptimizations() {
 
             return (
               <div key={section} className="border-b border-dark-border/50 last:border-b-0">
-                {/* Section header */}
                 <button
                   onClick={() => toggleSection(section)}
-                  className="w-full px-5 py-3 flex items-center justify-between hover:bg-dark-surface/30 transition-colors"
+                  className="w-full px-5 py-3 flex items-center justify-between hover:bg-dark-surface/30 transition-colors duration-300"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className={`w-2 h-2 rounded-full ${
-                      sectionFail > 0 ? "bg-red-400" : sectionPass === sectionChecks.length ? "bg-[#4ade80]" : "bg-yellow-400"
+                      sectionFail > 0 ? "bg-brand-red" : sectionPass === sectionChecks.length ? "bg-brand-green" : "bg-brand-amber"
                     }`} />
                     <span className="font-sans text-[13px] font-medium text-text-primary">
                       {section}
                     </span>
-                    <span className="font-mono text-[10px] text-text-muted">
+                    <span className="font-mono text-[0.6rem] text-text-muted">
                       {sectionPass}/{sectionChecks.length}
                     </span>
                   </div>
                   <svg
-                    className={`w-4 h-4 text-text-muted transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-text-muted transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -215,7 +212,6 @@ export default function CostOptimizations() {
                   </svg>
                 </button>
 
-                {/* Individual checks */}
                 {isExpanded && (
                   <div className="px-5 pb-3 space-y-2">
                     {sectionChecks.map((check) => {
@@ -223,12 +219,12 @@ export default function CostOptimizations() {
                       return (
                         <div
                           key={check.id}
-                          className={`rounded-lg border px-4 py-3 ${
+                          className={`rounded-card border px-4 py-3 ${
                             check.status === "fail"
-                              ? "border-red-500/20 bg-red-500/5"
+                              ? "border-brand-red/20 bg-[rgba(194,91,86,0.04)]"
                               : check.status === "warn"
-                                ? "border-yellow-500/20 bg-yellow-500/5"
-                                : "border-[#4ade80]/15 bg-[#4ade80]/5"
+                                ? "border-brand-amber/20 bg-[rgba(196,148,58,0.04)]"
+                                : "border-brand-green/15 bg-[rgba(74,124,89,0.04)]"
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -240,14 +236,14 @@ export default function CostOptimizations() {
                                 <p className="font-sans text-[12px] text-text-primary font-medium">
                                   {check.title}
                                 </p>
-                                <span className="flex-shrink-0 font-mono text-[10px] text-status-green-text whitespace-nowrap">
+                                <span className="flex-shrink-0 font-mono text-[0.6rem] text-brand-green whitespace-nowrap">
                                   {check.estimatedSaving}
                                 </span>
                               </div>
-                              <p className="font-mono text-[10px] text-text-muted mt-1 leading-relaxed">
+                              <p className="font-mono text-[0.6rem] text-text-muted mt-1 leading-[1.6]">
                                 {check.detail}
                               </p>
-                              <p className="font-mono text-[9px] text-text-muted/60 mt-1">
+                              <p className="font-mono text-[0.5rem] text-text-dim mt-1">
                                 {check.researchRef}
                               </p>
                             </div>

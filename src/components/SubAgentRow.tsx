@@ -26,11 +26,10 @@ export default function SubAgentRow({
 
   return (
     <>
-      <div className={`px-5 py-3 flex items-center justify-between hover:bg-dark-surface/20 transition-colors ${
+      <div className={`px-5 py-3 flex items-center justify-between hover:bg-dark-surface/20 transition-colors duration-300 ${
         isOff ? "opacity-50" : isStandby ? "opacity-60" : ""
       }`}>
         <div className="flex items-center gap-3">
-          {/* Small avatar */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={agent.avatar}
@@ -45,16 +44,16 @@ export default function SubAgentRow({
               <StatusBadge status={agent.status} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] text-text-muted">
+              <span className="font-mono text-[0.6rem] text-text-muted tracking-[0.06em] uppercase">
                 {agent.modelTier}
               </span>
               {agent.skills.length > 0 && (
-                <span className="font-mono text-[10px] text-text-muted">
+                <span className="font-mono text-[0.6rem] text-text-muted">
                   &middot; {agent.skills.length} skill{agent.skills.length !== 1 ? "s" : ""}
                 </span>
               )}
               {agent.lastActive && (
-                <span className="font-mono text-[10px] text-text-muted">
+                <span className="font-mono text-[0.6rem] text-text-muted">
                   &middot; {agent.lastActive}
                 </span>
               )}
@@ -63,13 +62,13 @@ export default function SubAgentRow({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Skill badges — clickable */}
+          {/* Skill pills */}
           <div className="hidden md:flex flex-wrap gap-1 max-w-[200px] justify-end">
             {agent.skills.slice(0, 2).map((skill) => (
               <button
                 key={skill.name}
                 onClick={() => setActiveSkill({ slug: skillToSlug(skill.name), name: skill.name.replace(/-skill$/, "").replace(/-/g, " ") })}
-                className="inline-flex items-center text-[9px] font-mono px-1.5 py-0.5 rounded border cursor-pointer transition-colors hover:opacity-80"
+                className="inline-flex items-center font-mono text-[0.5rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full border cursor-pointer transition-colors duration-300 hover:opacity-80"
                 style={{
                   borderColor: `${colour}20`,
                   backgroundColor: `${colour}08`,
@@ -80,8 +79,7 @@ export default function SubAgentRow({
               </button>
             ))}
           </div>
-          {/* Cost */}
-          <span className="font-mono text-[12px] text-text-muted min-w-[60px] text-right">
+          <span className="font-mono text-[0.6rem] text-text-muted min-w-[60px] text-right">
             ${agent.monthlyCost.toFixed(2)}
           </span>
         </div>

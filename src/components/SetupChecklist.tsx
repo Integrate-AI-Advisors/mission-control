@@ -7,15 +7,14 @@ interface SetupTask {
 }
 
 const priorityDot: Record<SetupTask["priority"], string> = {
-  high: "bg-red-400",
-  medium: "bg-amber-400",
-  low: "bg-text-dim",
+  high: "bg-brand-red",
+  medium: "bg-brand-amber",
+  low: "bg-text-muted",
 };
 
 export default function SetupChecklist({ agents }: { agents: Agent[] }) {
   const tasks: SetupTask[] = [];
 
-  // Check for agents with no skills
   const noSkills = agents.filter(
     (a) => a.tier === "executive" && a.skills.length === 0
   );
@@ -27,7 +26,6 @@ export default function SetupChecklist({ agents }: { agents: Agent[] }) {
     });
   }
 
-  // Check for offline executives
   const offExecs = agents.filter(
     (a) => a.tier === "executive" && a.status === "Off"
   );
@@ -39,7 +37,6 @@ export default function SetupChecklist({ agents }: { agents: Agent[] }) {
     });
   }
 
-  // Slack setup reminder
   tasks.push({
     label: "Configure Slack bot tokens",
     detail: "Set SLACK_BOT_TOKEN_CMO + SLACK_APP_TOKEN_CMO on VPS",
@@ -51,10 +48,10 @@ export default function SetupChecklist({ agents }: { agents: Agent[] }) {
   return (
     <div className="bg-dark-surface border border-dark-border rounded-card p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-sans text-[13px] font-semibold text-text-primary">
+        <p className="font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em]">
           Setup Required
-        </h2>
-        <span className="font-mono text-[11px] text-text-muted">
+        </p>
+        <span className="font-mono text-[0.6rem] text-text-muted leading-[1.6]">
           {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
         </span>
       </div>
@@ -68,7 +65,7 @@ export default function SetupChecklist({ agents }: { agents: Agent[] }) {
               <p className="font-sans text-[12px] text-text-primary leading-tight">
                 {task.label}
               </p>
-              <p className="font-mono text-[10px] text-text-muted">
+              <p className="font-mono text-[0.6rem] text-text-muted leading-[1.6]">
                 {task.detail}
               </p>
             </div>

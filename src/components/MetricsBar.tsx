@@ -43,7 +43,7 @@ export default function MetricsBar({
       label: "Gateway",
       value: gatewayRunning ? "Live" : "Offline",
       sub: gatewayRunning ? "Port 18789" : "Stopped",
-      statusColor: gatewayRunning ? "text-status-green-text" : "text-red-400",
+      statusColor: gatewayRunning ? "text-brand-green" : "text-brand-red",
     },
   ];
 
@@ -52,23 +52,23 @@ export default function MetricsBar({
       {metrics.map((m) => (
         <div
           key={m.label}
-          className="bg-dark-surface border border-dark-border rounded-card p-2 sm:p-4 text-center"
+          className="bg-dark-surface border border-dark-border rounded-card p-2 sm:p-4 text-center hover:-translate-y-1 hover:shadow-card-hover transition-all duration-300"
         >
-          <p className="font-mono text-[10px] text-text-muted uppercase tracking-wider mb-1">
+          <p className="font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1">
             {m.label}
           </p>
           <p
-            className={`font-serif text-[22px] sm:text-[28px] font-bold leading-none ${
+            className={`font-serif text-[22px] sm:text-[28px] leading-none ${
               m.statusColor
                 ? m.statusColor
                 : m.highlight
-                  ? "text-red-400"
+                  ? "text-brand-red"
                   : "text-text-primary"
             }`}
           >
             {m.value}
           </p>
-          <p className="font-mono text-[11px] text-text-muted mt-1">{m.sub}</p>
+          <p className="font-mono text-[0.6rem] text-text-muted mt-1.5 leading-[1.6]">{m.sub}</p>
         </div>
       ))}
     </div>

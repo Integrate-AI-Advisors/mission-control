@@ -32,18 +32,17 @@ export default function ExecutiveCard({
   return (
     <>
       <div
-        className={`bg-dark-card border border-dark-border rounded-card overflow-hidden ${
+        className={`bg-dark-card border border-dark-border rounded-card overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${
           isOff ? "opacity-50" : isStandby ? "opacity-60" : ""
         }`}
         style={{ borderLeftColor: colour, borderLeftWidth: "3px" }}
       >
-        {/* Executive Header — always visible */}
+        {/* Executive Header */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full p-5 flex items-center justify-between hover:bg-dark-surface/50 transition-colors"
+          className="w-full p-5 flex items-center justify-between hover:bg-dark-surface/50 transition-colors duration-300"
         >
           <div className="flex items-center gap-4">
-            {/* Avatar */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={executive.avatar}
@@ -53,26 +52,26 @@ export default function ExecutiveCard({
             />
             <div className="text-left">
               <div className="flex items-center gap-2">
-                <h2 className="font-sans text-[18px] font-bold text-text-primary">
+                <h2 className="font-sans text-[16px] font-semibold text-text-primary">
                   {executive.name}
                 </h2>
                 <StatusBadge status={executive.status} />
               </div>
-              <p className="font-sans text-[12px] text-text-secondary">{label}</p>
+              <p className="font-serif italic text-[0.88rem] text-text-muted">{label}</p>
               <div className="flex items-center gap-3 mt-1">
-                <span className="font-mono text-[11px] text-text-muted">
+                <span className="font-mono text-[0.6rem] text-text-muted tracking-[0.06em] uppercase">
                   {executive.modelTier}
                 </span>
-                <span className="font-mono text-[11px] text-text-muted">
+                <span className="font-mono text-[0.6rem] text-text-muted">
                   {subAgents.length} agents
                 </span>
                 {activeCount > 0 && (
-                  <span className="font-mono text-[11px] text-status-green-text">
+                  <span className="font-mono text-[0.6rem] text-brand-green">
                     {activeCount} active
                   </span>
                 )}
                 {executive.lastActive && (
-                  <span className="font-mono text-[11px] text-text-muted">
+                  <span className="font-mono text-[0.6rem] text-text-muted">
                     {executive.lastActive}
                   </span>
                 )}
@@ -81,16 +80,14 @@ export default function ExecutiveCard({
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Cost */}
             <div className="text-right">
               <span className="font-mono text-[14px] text-text-primary">
                 ${totalCost.toFixed(2)}
-                <span className="text-text-muted text-[11px]">/mo</span>
+                <span className="text-text-muted text-[0.6rem]">/mo</span>
               </span>
             </div>
-            {/* Expand icon */}
             <svg
-              className={`w-5 h-5 text-text-muted transition-transform ${expanded ? "rotate-180" : ""}`}
+              className={`w-5 h-5 text-text-muted transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -103,14 +100,14 @@ export default function ExecutiveCard({
           </div>
         </button>
 
-        {/* Skills summary (always visible) — clickable badges */}
+        {/* Skills — pill badges per brand spec */}
         {executive.skills.length > 0 && (
           <div className="px-5 pb-3 flex flex-wrap gap-1.5">
             {executive.skills.slice(0, 6).map((skill) => (
               <button
                 key={skill.name}
                 onClick={() => setActiveSkill({ slug: skillToSlug(skill.name), name: skill.name.replace(/-skill$/, "").replace(/-/g, " ") })}
-                className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded border cursor-pointer transition-colors hover:opacity-80"
+                className="inline-flex items-center font-mono text-[0.55rem] font-semibold uppercase tracking-[0.06em] px-2.5 py-0.5 rounded-full border cursor-pointer transition-colors duration-300 hover:opacity-80"
                 style={{
                   borderColor: `${colour}30`,
                   backgroundColor: `${colour}10`,
@@ -121,18 +118,18 @@ export default function ExecutiveCard({
               </button>
             ))}
             {executive.skills.length > 6 && (
-              <span className="text-[10px] font-mono text-text-muted px-1">
+              <span className="font-mono text-[0.55rem] text-text-muted px-1 self-center">
                 +{executive.skills.length - 6} more
               </span>
             )}
           </div>
         )}
 
-        {/* Sub-agent list — expandable */}
+        {/* Sub-agent list */}
         {expanded && subAgents.length > 0 && (
           <div className="border-t border-dark-border">
             <div className="px-5 py-2 bg-dark-surface/30">
-              <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider">
+              <span className="font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em]">
                 Team Members ({subAgents.length})
               </span>
             </div>

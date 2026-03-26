@@ -78,65 +78,70 @@ export default function OnboardingWizard({
     setError(null);
   }
 
+  const inputClass =
+    "w-full bg-dark-bg border border-dark-border rounded-card px-3 py-2.5 text-text-primary text-sm font-sans focus:outline-none focus:border-terra/50 transition-colors duration-300 placeholder:text-text-dim";
+  const monoInputClass =
+    "w-full bg-dark-bg border border-dark-border rounded-card px-3 py-2.5 text-text-primary text-sm font-mono focus:outline-none focus:border-terra/50 transition-colors duration-300 placeholder:text-text-dim";
+
   const steps = [
     // Step 0: Client basics
     <div key="basics" className="space-y-4">
-      <h3 className="font-serif text-lg font-semibold text-text-primary">
+      <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra">
         New Client
-      </h3>
-      <p className="text-text-muted text-sm">
-        Enter the client company details.
       </p>
+      <h3 className="font-serif text-[1.15rem] text-text-primary">
+        Company Details
+      </h3>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Company Name *
         </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="New Ground Coffee"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50"
+          className={inputClass}
         />
         {name && (
-          <p className="text-text-dim text-xs mt-1 font-mono">
+          <p className="font-mono text-[0.6rem] text-text-muted mt-1.5 leading-[1.6]">
             slug: {slug}
           </p>
         )}
       </div>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Industry
         </label>
         <input
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
           placeholder="Specialty Coffee Roastery"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50"
+          className={inputClass}
         />
       </div>
     </div>,
 
     // Step 1: Founder details
     <div key="founder" className="space-y-4">
-      <h3 className="font-serif text-lg font-semibold text-text-primary">
+      <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra">
+        Primary Contact
+      </p>
+      <h3 className="font-serif text-[1.15rem] text-text-primary">
         Founder Details
       </h3>
-      <p className="text-text-muted text-sm">
-        Who is the primary contact at this company?
-      </p>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Name
         </label>
         <input
           value={founderName}
           onChange={(e) => setFounderName(e.target.value)}
           placeholder="Dickon"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50"
+          className={inputClass}
         />
       </div>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Email
         </label>
         <input
@@ -144,11 +149,11 @@ export default function OnboardingWizard({
           onChange={(e) => setFounderEmail(e.target.value)}
           placeholder="dickon@newgroundcoffee.com"
           type="email"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50"
+          className={inputClass}
         />
       </div>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Phone
         </label>
         <input
@@ -156,32 +161,35 @@ export default function OnboardingWizard({
           onChange={(e) => setFounderPhone(e.target.value)}
           placeholder="+44 7700 000000"
           type="tel"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50"
+          className={inputClass}
         />
       </div>
     </div>,
 
-    // Step 2: Infrastructure (optional for now, required for existing VPS)
+    // Step 2: Infrastructure
     <div key="infra" className="space-y-4">
-      <h3 className="font-serif text-lg font-semibold text-text-primary">
+      <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra">
         Infrastructure
+      </p>
+      <h3 className="font-serif text-[1.15rem] text-text-primary">
+        VPS Connection
       </h3>
-      <p className="text-text-muted text-sm">
+      <p className="font-sans text-[0.88rem] text-text-muted leading-[1.7]">
         Connect to an existing VPS, or leave blank to provision later.
       </p>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Gateway URL
         </label>
         <input
           value={gatewayUrl}
           onChange={(e) => setGatewayUrl(e.target.value)}
           placeholder="http://89.167.1.21:18789"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50 font-mono"
+          className={monoInputClass}
         />
       </div>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           Gateway Token
         </label>
         <input
@@ -189,18 +197,18 @@ export default function OnboardingWizard({
           onChange={(e) => setGatewayToken(e.target.value)}
           placeholder="Bearer token (if required)"
           type="password"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50 font-mono"
+          className={monoInputClass}
         />
       </div>
       <div>
-        <label className="block text-text-secondary text-xs font-mono mb-1">
+        <label className="block font-mono text-[0.6rem] font-semibold text-terra uppercase tracking-[0.2em] mb-1.5">
           VPS IP
         </label>
         <input
           value={vpsIp}
           onChange={(e) => setVpsIp(e.target.value)}
           placeholder="89.167.1.21"
-          className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-terra/50 font-mono"
+          className={monoInputClass}
         />
       </div>
     </div>,
@@ -218,13 +226,13 @@ export default function OnboardingWizard({
       />
 
       {/* Modal */}
-      <div className="relative bg-dark-surface border border-dark-border rounded-xl shadow-panel w-full max-w-md mx-4 p-6">
-        {/* Step indicator */}
+      <div className="relative bg-dark-surface border border-dark-border rounded-panel shadow-panel w-full max-w-md mx-4 p-6">
+        {/* Step indicator — terra progress bar */}
         <div className="flex gap-1.5 mb-6">
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full transition-colors ${
+              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
                 i <= step ? "bg-terra" : "bg-dark-border"
               }`}
             />
@@ -236,21 +244,21 @@ export default function OnboardingWizard({
 
         {/* Error */}
         {error && (
-          <p className="mt-3 text-red-400 text-sm font-mono">{error}</p>
+          <p className="mt-3 text-brand-red text-sm font-mono">{error}</p>
         )}
 
         {/* Actions */}
         <div className="flex justify-between mt-6">
           <button
             onClick={step === 0 ? onClose : () => setStep(step - 1)}
-            className="px-4 py-2 text-text-muted text-sm hover:text-text-secondary transition-colors"
+            className="px-4 py-2 text-text-muted text-sm font-sans hover:text-text-secondary transition-colors duration-300"
           >
             {step === 0 ? "Cancel" : "Back"}
           </button>
           <button
             onClick={isLastStep ? handleSubmit : () => setStep(step + 1)}
             disabled={!canProceed || saving}
-            className="px-4 py-2 bg-terra text-white text-sm font-medium rounded-lg hover:bg-terra-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-5 py-2.5 bg-terra text-white text-sm font-sans font-medium rounded-card hover:bg-terra-light transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {saving ? "Creating..." : isLastStep ? "Create Client" : "Next"}
           </button>

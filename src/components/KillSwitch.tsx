@@ -32,7 +32,6 @@ export default function KillSwitch({
       const data = await res.json();
       setRunning(data.running);
 
-      // Wait for gateway to fully stop/start, then verify
       const delay = action === "stop" ? 3000 : 8000;
       setTimeout(async () => {
         const healthRes = await fetch("/api/gateway");
@@ -55,19 +54,19 @@ export default function KillSwitch({
     <div className="flex items-center gap-3">
       {confirmStop && (
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px] text-red-400">
-            Stop all employees?
+          <span className="font-mono text-[0.6rem] text-brand-red uppercase tracking-[0.06em]">
+            Stop all agents?
           </span>
           <button
             onClick={toggle}
             disabled={loading}
-            className="font-mono text-[11px] px-2 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+            className="font-mono text-[0.6rem] font-semibold px-2 py-1 rounded-card bg-[rgba(194,91,86,0.10)] text-brand-red border border-brand-red/30 hover:bg-[rgba(194,91,86,0.20)] transition-colors duration-300 uppercase tracking-[0.06em]"
           >
             {loading ? "..." : "Confirm"}
           </button>
           <button
             onClick={cancelStop}
-            className="font-mono text-[11px] px-2 py-1 rounded bg-dark-surface text-text-muted border border-dark-border hover:text-text-primary transition-colors"
+            className="font-mono text-[0.6rem] px-2 py-1 rounded-card bg-dark-surface text-text-muted border border-dark-border hover:text-text-primary transition-colors duration-300"
           >
             Cancel
           </button>
@@ -77,17 +76,17 @@ export default function KillSwitch({
         <button
           onClick={toggle}
           disabled={loading}
-          className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
+          className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
             running
-              ? "bg-status-green/30 border border-[rgba(34,197,94,0.3)]"
+              ? "bg-[rgba(74,124,89,0.20)] border border-[rgba(74,124,89,0.3)]"
               : "bg-dark-surface border border-dark-border"
           }`}
         >
           <span
-            className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-200 ${
+            className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-300 ${
               running
-                ? "left-[26px] bg-status-green shadow-[0_0_8px_rgba(34,197,94,0.3)]"
-                : "left-0.5 bg-text-dim"
+                ? "left-[26px] bg-brand-green shadow-[0_0_8px_rgba(74,124,89,0.3)]"
+                : "left-0.5 bg-text-muted"
             }`}
           />
         </button>

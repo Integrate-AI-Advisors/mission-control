@@ -26,7 +26,6 @@ export default function Sidebar({ activeClient }: { activeClient: string }) {
     window.location.href = `/dashboard/${slug}`;
   }
 
-  // Generate initials from client name (max 2 chars)
   function initials(name: string) {
     return name
       .split(/\s+/)
@@ -43,33 +42,33 @@ export default function Sidebar({ activeClient }: { activeClient: string }) {
         {/* IntegrateAI Logo — always first */}
         <a
           href="/dashboard/integrateai"
-          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+          className={`w-10 h-10 rounded-card flex items-center justify-center transition-all duration-300 ${
             activeClient === "integrateai"
-              ? "bg-terra/20 border border-terra/40 shadow-[0_0_12px_rgba(217,119,87,0.15)]"
-              : "bg-dark-card border border-dark-border hover:border-terra/20"
+              ? "bg-terra/15 border border-terra/40 shadow-[0_0_12px_rgba(217,119,87,0.15)]"
+              : "bg-dark-card border border-dark-border hover:border-terra/20 hover:-translate-y-0.5"
           }`}
           title="IntegrateAI Advisors"
         >
           <svg viewBox="0 0 32 32" className="w-6 h-6">
-            <rect width="32" height="32" rx="8" fill="#1a1a19" />
-            <circle cx="8" cy="11" r="3" fill="#d97757" />
-            <circle cx="18" cy="11" r="3" fill="#d97757" opacity="0.4" />
-            <circle cx="8" cy="21" r="3" fill="#d97757" opacity="0.2" />
-            <circle cx="18" cy="21" r="3" fill="#d97757" />
+            <rect width="32" height="32" rx="8" fill="#1A1A19" />
+            <circle cx="8" cy="11" r="3" fill="#D97757" />
+            <circle cx="18" cy="11" r="3" fill="#D97757" opacity="0.4" />
+            <circle cx="8" cy="21" r="3" fill="#D97757" opacity="0.2" />
+            <circle cx="18" cy="21" r="3" fill="#D97757" />
           </svg>
         </a>
 
-        {/* Dynamic client list (excluding integrateai — it has the logo above) */}
+        {/* Dynamic client list */}
         {clients
           .filter((c) => c.slug !== "integrateai")
           .map((client) => (
             <a
               key={client.id}
               href={`/dashboard/${client.slug}`}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all text-[11px] font-mono font-semibold ${
+              className={`w-10 h-10 rounded-card flex items-center justify-center transition-all duration-300 text-[11px] font-mono font-semibold ${
                 activeClient === client.slug
-                  ? "bg-terra/20 border border-terra/40 text-terra shadow-[0_0_12px_rgba(217,119,87,0.15)]"
-                  : "bg-dark-card border border-dark-border text-text-muted hover:border-terra/20 hover:text-text-secondary"
+                  ? "bg-terra/15 border border-terra/40 text-terra shadow-[0_0_12px_rgba(217,119,87,0.15)]"
+                  : "bg-dark-card border border-dark-border text-text-muted hover:border-terra/20 hover:text-text-secondary hover:-translate-y-0.5"
               }`}
               title={client.name}
             >
@@ -77,13 +76,17 @@ export default function Sidebar({ activeClient }: { activeClient: string }) {
             </a>
           ))}
 
-        {/* Divider */}
-        <div className="w-6 h-px bg-dark-border" />
+        {/* Dot divider */}
+        <div className="flex flex-col items-center gap-1 py-1">
+          <span className="w-1 h-1 rounded-full bg-terra/30" />
+          <span className="w-1 h-1 rounded-full bg-terra/20" />
+          <span className="w-1 h-1 rounded-full bg-terra/10" />
+        </div>
 
         {/* Add Client */}
         <button
           onClick={() => setWizardOpen(true)}
-          className="w-10 h-10 rounded-lg bg-dark-card border border-dark-border flex items-center justify-center text-text-muted hover:text-terra hover:border-terra/20 transition-all group relative"
+          className="w-10 h-10 rounded-card bg-dark-card border border-dark-border flex items-center justify-center text-text-muted hover:text-terra hover:border-terra/20 hover:-translate-y-0.5 transition-all duration-300 group relative"
           title="Add client"
         >
           <svg
@@ -100,7 +103,7 @@ export default function Sidebar({ activeClient }: { activeClient: string }) {
               strokeLinecap="round"
             />
           </svg>
-          <span className="absolute left-14 bg-dark-card border border-dark-border text-text-secondary text-[11px] font-mono px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          <span className="absolute left-14 bg-dark-card border border-dark-border text-text-secondary text-[11px] font-mono px-2 py-1 rounded-card whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             Add client
           </span>
         </button>

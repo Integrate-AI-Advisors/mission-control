@@ -100,32 +100,24 @@ export default async function DashboardPage({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-serif text-[24px] font-bold text-text-primary">
+            <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra mb-1">
               Mission Control
-            </h1>
-            <p className="font-mono text-[12px] text-text-secondary tracking-wide">
+            </p>
+            <h1 className="font-serif text-[clamp(1.4rem,2.5vw,1.8rem)] text-text-primary leading-[1.12]">
               {clientName}
-              {totalAgents > 0 && <> &middot; {totalAgents} agents</>}
+            </h1>
+            <p className="font-mono text-[0.6rem] text-text-muted mt-1 leading-[1.6]">
+              {totalAgents > 0 && <>{totalAgents} agents</>}
               {" "}&middot;{" "}
               {!hasGateway ? (
-                <span className="text-text-muted">No gateway configured</span>
+                <span>No gateway configured</span>
               ) : (
-                <span
-                  className={
-                    gatewayRunning ? "text-status-green-text" : "text-red-400"
-                  }
-                >
+                <span className={gatewayRunning ? "text-brand-green" : "text-brand-red"}>
                   {gatewayRunning ? "Live" : "Offline"}
                 </span>
               )}
-              {slackEnabled && (
-                <span className="text-text-muted"> &middot; Slack connected</span>
-              )}
-              {phase !== "unknown" && (
-                <span className="text-text-muted">
-                  {" "}&middot; Phase: {phase}
-                </span>
-              )}
+              {slackEnabled && <span> &middot; Slack connected</span>}
+              {phase !== "unknown" && <span> &middot; Phase: {phase}</span>}
             </p>
           </div>
           {hasGateway && <KillSwitch initialState={gatewayRunning} />}
@@ -133,11 +125,14 @@ export default async function DashboardPage({
 
         {/* No gateway state */}
         {!hasGateway && (
-          <div className="bg-dark-card border border-dark-border rounded-lg p-6 mb-6">
-            <h2 className="font-serif text-lg font-semibold text-text-primary mb-2">
+          <div className="bg-dark-card border border-dark-border rounded-card p-6 mb-6">
+            <p className="font-mono text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-terra mb-2">
+              Setup Required
+            </p>
+            <h2 className="font-serif text-[1.15rem] text-text-primary mb-2">
               Gateway Not Configured
             </h2>
-            <p className="text-text-muted text-sm">
+            <p className="font-sans text-[0.88rem] text-text-muted leading-[1.7] max-w-[700px]">
               This client doesn&apos;t have a VPS gateway connected yet.
               Configure the gateway URL in client settings to see agent data.
             </p>
