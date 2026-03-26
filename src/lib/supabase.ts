@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 let _supabase: SupabaseClient | null = null;
+let _supabaseAdmin: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
   if (_supabase) return _supabase;
@@ -14,4 +15,20 @@ export function getSupabase(): SupabaseClient {
 
   _supabase = createClient(url, key);
   return _supabase;
+}
+
+/** Server-side only — uses service role key, bypasses RLS */
+export function getSupabaseAdmin(): SupabaseClient {
+  if (_supabaseAdmin) return _supabaseAdmin;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    // Fall back to anon key if service role not available
+    return getSupabase();
+  }
+
+  _supabaseAdmin = createClient(url, key);
+  return _supabaseAdmin;
 }

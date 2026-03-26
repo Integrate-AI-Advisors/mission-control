@@ -1,4 +1,4 @@
-import { getSupabase } from "./supabase";
+import { getSupabase, getSupabaseAdmin } from "./supabase";
 
 export type ClientPhase =
   | "onboarding"
@@ -43,7 +43,7 @@ export interface CreateClientInput {
 
 export async function getClients(): Promise<Client[]> {
   try {
-    const { data, error } = await getSupabase()
+    const { data, error } = await getSupabaseAdmin()
       .from("clients")
       .select("*")
       .order("created_at", { ascending: true });
@@ -58,14 +58,14 @@ export async function getClients(): Promise<Client[]> {
 export async function getClient(idOrSlug: string): Promise<Client | null> {
   try {
     // Try by slug first (most common in URLs), then by id
-    const { data } = await getSupabase()
+    const { data } = await getSupabaseAdmin()
       .from("clients")
       .select("*")
       .eq("slug", idOrSlug)
       .single();
     if (data) return data;
 
-    const { data: byId } = await getSupabase()
+    const { data: byId } = await getSupabaseAdmin()
       .from("clients")
       .select("*")
       .eq("id", idOrSlug)
@@ -78,7 +78,7 @@ export async function getClient(idOrSlug: string): Promise<Client | null> {
 }
 
 export async function createClient(input: CreateClientInput): Promise<Client> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await getSupabaseAdmin()
     .from("clients")
     .insert({
       name: input.name,
@@ -103,7 +103,7 @@ export async function updateClient(
   id: string,
   updates: Partial<Omit<Client, "id" | "created_at">>
 ): Promise<Client> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await getSupabaseAdmin()
     .from("clients")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", id)

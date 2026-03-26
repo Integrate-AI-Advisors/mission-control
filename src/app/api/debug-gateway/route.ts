@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getClient } from "@/lib/clients";
 import { getGatewayHealth, getAgentConfig } from "@/lib/gateway";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import type { GatewayConfig } from "@/lib/gateway";
 
 export const dynamic = "force-dynamic";
