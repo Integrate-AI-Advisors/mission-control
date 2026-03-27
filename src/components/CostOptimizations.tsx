@@ -39,6 +39,8 @@ const sectionOrder = [
   "Evolution",
   "Performance",
   "Drift Prevention",
+  "C-Suite Integration",
+  "Self-Improvement",
 ];
 
 export default function CostOptimizations() {
