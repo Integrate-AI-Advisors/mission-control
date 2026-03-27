@@ -13,6 +13,8 @@ import CronTab from "./tabs/CronTab";
 import SkillsTab from "./tabs/SkillsTab";
 import ConfigTab from "./tabs/ConfigTab";
 import type { Agent, ExecutiveGroup, CostData } from "@/lib/types";
+import { EXECUTIVE_LABELS, EXECUTIVE_COLOURS } from "@/lib/hierarchy";
+import type { Executive } from "@/lib/types";
 
 interface Props {
   clientId: string;
@@ -105,23 +107,27 @@ export default function DashboardClient({
               <div className="mb-6">
                 <CostOptimizations />
               </div>
-              {/* Executive summary cards on overview */}
-              <div className="space-y-4">
-                {groups.slice(0, 3).map((group, i) => (
+              {/* All executive summary cards */}
+              <div className="space-y-3">
+                {groups.map((group, i) => (
                   <div
                     key={group.executive.id}
-                    style={{ animationDelay: `${i * 100}ms` }}
+                    style={{ animationDelay: `${i * 80}ms` }}
                     className="opacity-0 animate-fade-in"
                   >
-                    <div className="bg-dark-card border border-dark-border rounded-card p-4 flex items-center justify-between"
-                      style={{ borderLeftColor: getExecColor(group.executive.id), borderLeftWidth: "3px" }}
+                    <div className="bg-dark-card border border-dark-border rounded-card p-4 flex items-center justify-between hover:-translate-y-0.5 hover:shadow-card-hover transition-all duration-300 cursor-pointer"
+                      style={{ borderLeftColor: EXECUTIVE_COLOURS[group.executive.id as keyof typeof EXECUTIVE_COLOURS] || "#D97757", borderLeftWidth: "3px" }}
+                      onClick={() => setActiveTab("agents")}
                     >
                       <div className="flex items-center gap-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={group.executive.avatar} alt="" className="w-10 h-10 rounded-full" />
                         <div>
                           <p className="font-sans text-[14px] font-semibold text-text-primary">{group.executive.name}</p>
-                          <p className="font-mono text-[0.6rem] text-text-muted">
+                          <p className="font-serif italic text-[0.8rem] text-text-muted">
+                            {EXECUTIVE_LABELS[group.executive.id as keyof typeof EXECUTIVE_LABELS] || group.executive.role}
+                          </p>
+                          <p className="font-mono text-[0.6rem] text-text-muted mt-0.5">
                             {group.subAgents.length} agents &middot; {group.activeCount} active
                           </p>
                         </div>
@@ -135,14 +141,6 @@ export default function DashboardClient({
                     </div>
                   </div>
                 ))}
-                {groups.length > 3 && (
-                  <button
-                    onClick={() => setActiveTab("agents")}
-                    className="w-full py-2 font-mono text-[0.65rem] text-terra hover:text-terra-light transition-colors"
-                  >
-                    View all {groups.length} departments →
-                  </button>
-                )}
               </div>
             </>
           )}
@@ -160,7 +158,7 @@ export default function DashboardClient({
           )}
 
           {activeTab === "skills" && (
-            <SkillsTab agents={agents} />
+            <SkillsTab clientId={clientId} />
           )}
 
           {activeTab === "config" && (
@@ -172,12 +170,3 @@ export default function DashboardClient({
   );
 }
 
-const EXEC_COLORS: Record<string, string> = {
-  ceo: "#7B2DFF", cmo: "#FF5630", cto: "#00B8D9",
-  coo: "#36B37E", cfo: "#FFAB00", cco: "#E91E8C",
-  discovery: "#6554C0",
-};
-
-function getExecColor(id: string): string {
-  return EXEC_COLORS[id] || "#D97757";
-}

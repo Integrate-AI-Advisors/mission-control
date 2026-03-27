@@ -1,80 +1,102 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { join } from "path";
-import { isExecutive, getParentExecutive } from "@/lib/hierarchy";
+import { getClient } from "@/lib/clients";
+import type { GatewayConfig } from "@/lib/gateway";
 
-const SKILLS_ROOT = process.env.OPENCLAW_SKILLS_ROOT || "/root/openclaw";
+export const dynamic = "force-dynamic";
+
+interface SkillEntry {
+  name: string;
+  agent: string;
+  description: string;
+  path: string;
+  content: string;
+}
+
+interface SkillsIndex {
+  generated: string;
+  source: string;
+  count: number;
+  skills: SkillEntry[];
+}
+
+// Cache the skills index (it's ~1.6MB)
+let skillsCache: { data: SkillsIndex; ts: number } | null = null;
+const CACHE_TTL = 60_000; // 1 minute
+
+async function fetchSkillsIndex(gw: GatewayConfig): Promise<SkillsIndex | null> {
+  const now = Date.now();
+  if (skillsCache && now - skillsCache.ts < CACHE_TTL) {
+    return skillsCache.data;
+  }
+
+  if (!gw.url) return null;
+
+  try {
+    const res = await fetch(`${gw.url}/__openclaw__/canvas/skills-index.json`, {
+      cache: "no-store",
+      headers: gw.token ? { Authorization: `Bearer ${gw.token}` } : {},
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) return null;
+
+    const data = await res.json() as SkillsIndex;
+    skillsCache = { data, ts: now };
+    return data;
+  } catch {
+    return null;
+  }
+}
 
 export async function GET(req: NextRequest) {
-  const agentId = req.nextUrl.searchParams.get("agent");
+  const clientSlug = req.nextUrl.searchParams.get("client") || "integrateai";
+  const agentFilter = req.nextUrl.searchParams.get("agent");
   const skillSlug = req.nextUrl.searchParams.get("skill");
 
-  if (!agentId || !skillSlug) {
-    return NextResponse.json({ error: "Missing agent or skill parameter" }, { status: 400 });
+  const client = await getClient(clientSlug);
+  const gw: GatewayConfig = {
+    url: client?.gateway_url || process.env.OPENCLAW_GATEWAY_URL || "",
+    token: client?.gateway_token || process.env.OPENCLAW_GATEWAY_TOKEN || "",
+  };
+
+  const index = await fetchSkillsIndex(gw);
+
+  if (!index) {
+    return NextResponse.json({
+      error: "Skills index not available. Run build-skills-index.sh on VPS.",
+      skills: [],
+      count: 0,
+    });
   }
 
-  // Determine workspace
-  let workspaceOwner: string;
-  if (isExecutive(agentId)) {
-    workspaceOwner = agentId;
-  } else {
-    const parent = getParentExecutive(agentId);
-    if (!parent) {
-      return NextResponse.json({ error: "Unknown agent" }, { status: 404 });
+  // If requesting a specific skill's content
+  if (agentFilter && skillSlug) {
+    const skill = index.skills.find(
+      (s) => s.agent === agentFilter && s.name === skillSlug
+    );
+    if (skill) {
+      return NextResponse.json({ content: skill.content, path: skill.path });
     }
-    workspaceOwner = parent;
-  }
-
-  const skillsDir = join(SKILLS_ROOT, `workspace-${workspaceOwner}`, "skills");
-  if (!existsSync(skillsDir)) {
-    return NextResponse.json({ error: "Skills directory not found" }, { status: 404 });
-  }
-
-  // Try exact match first, then with -skill suffix, then fuzzy match
-  const candidates = [
-    skillSlug,
-    `${skillSlug}-skill`,
-    // Also check all dirs for a partial match
-  ];
-
-  let skillFile: string | null = null;
-
-  for (const candidate of candidates) {
-    const path = join(skillsDir, candidate, "SKILL.md");
-    if (existsSync(path)) {
-      skillFile = path;
-      break;
+    // Fuzzy match
+    const fuzzy = index.skills.find(
+      (s) =>
+        s.agent === agentFilter &&
+        (s.name.includes(skillSlug) || skillSlug.includes(s.name))
+    );
+    if (fuzzy) {
+      return NextResponse.json({ content: fuzzy.content, path: fuzzy.path });
     }
-  }
-
-  // Fuzzy match: check all directories
-  if (!skillFile) {
-    try {
-      const dirs = readdirSync(skillsDir, { withFileTypes: true });
-      for (const dir of dirs) {
-        if (!dir.isDirectory()) continue;
-        const dirClean = dir.name.replace(/-skill$/, "");
-        if (dirClean === skillSlug || dirClean.includes(skillSlug) || skillSlug.includes(dirClean)) {
-          const path = join(skillsDir, dir.name, "SKILL.md");
-          if (existsSync(path)) {
-            skillFile = path;
-            break;
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  if (!skillFile) {
     return NextResponse.json({ error: "Skill not found" }, { status: 404 });
   }
 
-  try {
-    const content = readFileSync(skillFile, "utf-8");
-    return NextResponse.json({ content, path: skillFile });
-  } catch {
-    return NextResponse.json({ error: "Failed to read skill file" }, { status: 500 });
-  }
+  // Return index (without full content to keep response small)
+  const skills = index.skills
+    .filter((s) => !agentFilter || s.agent === agentFilter)
+    .map(({ name, agent, description }) => ({ name, agent, description }));
+
+  return NextResponse.json({
+    skills,
+    count: skills.length,
+    generated: index.generated,
+  });
 }
