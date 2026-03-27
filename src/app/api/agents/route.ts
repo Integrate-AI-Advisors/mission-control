@@ -3,7 +3,8 @@ import { getAgents } from "@/lib/openclaw";
 import { deriveAgentStatuses } from "@/lib/gateway";
 import type { GatewayConfig } from "@/lib/gateway";
 import { getClient } from "@/lib/clients";
-import type { Agent, CostData } from "@/lib/types";
+import { getCosts } from "@/lib/langfuse";
+import type { Agent } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -17,18 +18,11 @@ export async function GET(request: NextRequest) {
       token: client?.gateway_token || process.env.OPENCLAW_GATEWAY_TOKEN || "",
     };
 
-    const baseAgents = await getAgents(gw);
-    const statuses = gw.url ? await deriveAgentStatuses(gw) : {};
-
-    // Costs: stub for now
-    const costs: CostData = {
-      totalMonth: 0,
-      estimatedMonth: 0,
-      todayCost: 0,
-      byAgent: {},
-      byModel: {},
-      callCount: 0,
-    };
+    const [baseAgents, statuses, costs] = await Promise.all([
+      getAgents(gw),
+      gw.url ? deriveAgentStatuses(gw) : Promise.resolve({} as Record<string, { status: import("@/lib/types").AgentStatus; lastActive: string | null }>),
+      getCosts(),
+    ]);
 
     const agents: Agent[] = baseAgents.map((a) => {
       const statusInfo = statuses[a.id] || {
