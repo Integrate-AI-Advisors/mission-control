@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClientAction } from "@/lib/actions/clients";
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -17,35 +18,18 @@ export default function NewClientPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const slug = formData.get("slug") as string;
-    const industry = formData.get("industry") as string;
-    const budget = formData.get("budget") as string;
 
-    try {
-      const res = await fetch("/api/clients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          slug,
-          industry: industry || undefined,
-          monthly_budget_usd: budget ? parseFloat(budget) : undefined,
-        }),
-      });
+    const result = await createClientAction(formData);
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create client");
-      }
-
-      const client = await res.json();
-      router.push(`/clients/${client.slug}`);
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
+    if (result.error) {
+      setError(result.error);
       setLoading(false);
+      return;
+    }
+
+    if (result.client) {
+      router.push(`/clients/${result.client.slug}`);
+      router.refresh();
     }
   }
 
