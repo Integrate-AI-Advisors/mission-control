@@ -1,49 +1,29 @@
-export type AgentTier = "executive" | "core" | "specialist" | "contractor";
-export type AgentStatus = "Working" | "Available" | "Queued" | "Standby" | "Off";
-export type Executive = "ceo" | "cmo" | "cto" | "coo" | "cfo" | "cco" | "discovery";
+// Phase lifecycle for client journey
+export type ClientPhase = "discovery" | "dashboard" | "intelligence" | "operations";
 
-export interface Agent {
-  id: string;
-  name: string;
-  role: string;
-  avatar: string;
-  model: string;
-  modelTier: string;
-  tools: string[];
-  skills: Skill[];
-  status: AgentStatus;
-  lastActive: string | null;
-  monthlyCost: number;
-  tier: AgentTier;
-  parent: Executive | null;
-  slackChannelUrl: string | null;
-  isStandby: boolean;
-}
+// Phase color mapping
+export const PHASE_COLORS: Record<ClientPhase, string> = {
+  discovery: "#4A7C59",
+  dashboard: "#4A6FA5",
+  intelligence: "#D97757",
+  operations: "#7B61A5",
+};
 
-export interface ExecutiveGroup {
-  executive: Agent;
-  subAgents: Agent[];
-  totalCost: number;
-  activeCount: number;
-}
+export const PHASE_LABELS: Record<ClientPhase, string> = {
+  discovery: "Discovery",
+  dashboard: "Dashboard",
+  intelligence: "Intelligence",
+  operations: "Operations",
+};
 
-export interface Skill {
-  name: string;
-  description: string;
-  version: string;
-}
+// Session status
+export type SessionStatus = "running" | "completed" | "failed" | "cancelled";
 
-export interface CostData {
-  totalMonth: number;
-  estimatedMonth: number;
-  todayCost: number;
-  byAgent: Record<string, number>;
-  byModel: Record<string, number>;
-  callCount: number;
-}
+// Integration health
+export type HealthStatus = "healthy" | "degraded" | "down" | "unknown";
 
-export const DAILY_COST_ALERT_THRESHOLD = 2.0; // USD — warn when daily spend exceeds this
+// Approval lifecycle
+export type ApprovalStatus = "pending" | "approved" | "executing" | "done" | "declined";
 
-export interface GatewayState {
-  running: boolean;
-}
+// Pattern severity
+export type PatternSeverity = "low" | "medium" | "high" | "critical";
