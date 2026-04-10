@@ -25,6 +25,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return NextResponse.json(
+        { error: "slug must contain only lowercase letters, numbers, and hyphens" },
+        { status: 400 }
+      );
+    }
+
     const client = await createClient({
       name,
       slug,

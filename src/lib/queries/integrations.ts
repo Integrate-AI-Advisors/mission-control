@@ -8,14 +8,13 @@ export interface Integration {
   status: string;
   health_status: HealthStatus;
   health_checked_at: string | null;
-  webhook_token: string | null;
   store_domain: string | null;
 }
 
 export async function getIntegrations(clientId: string): Promise<Integration[]> {
   const { data, error } = await getSupabaseAdmin()
     .from("integrations")
-    .select("*")
+    .select("id, client_id, service, status, health_status, health_checked_at, store_domain")
     .eq("client_id", clientId)
     .order("health_status", { ascending: true }); // broken first
   if (error) throw error;

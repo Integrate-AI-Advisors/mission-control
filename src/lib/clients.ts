@@ -28,9 +28,11 @@ export async function getClients(): Promise<Client[]> {
       .order("name", { ascending: true });
     if (error) throw error;
     return data || [];
-  } catch {
-    // Supabase not configured (build time) — return empty
-    return [];
+  } catch (err) {
+    // Return empty only if Supabase isn't configured (build time)
+    const msg = err instanceof Error ? err.message : "";
+    if (msg.includes("not configured")) return [];
+    throw err;
   }
 }
 
@@ -81,8 +83,15 @@ export async function advancePhase(id: string, currentPhase: ClientPhase): Promi
     throw new Error(`Cannot advance from phase: ${currentPhase}`);
   }
   const nextPhase = phaseOrder[currentIndex + 1];
-  return updateClient(id, {
-    phase: nextPhase,
-    phase_changed_at: new Date().toISOString(),
-  });
+  // Atomic: only advance if phase hasn't changed since we read it
+  const { data, error } = await getSupabaseAdmin()
+    .from("clients")
+    .update({ phase: nextPhase, phase_changed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("phase", currentPhase) // atomic guard
+    .select()
+    .single();
+  if (error) throw error;
+  if (!data) throw new Error("Phase was already advanced by another request");
+  return data;
 }
