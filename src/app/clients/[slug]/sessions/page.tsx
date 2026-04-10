@@ -31,7 +31,7 @@ export default async function SessionsPage({
   const client = await getClient(params.slug);
   if (!client) notFound();
 
-  const page = parseInt(searchParams.page || "1", 10);
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1);
   const { data: sessions, count } = await getSessions({
     clientId: client.id,
     role: searchParams.role,

@@ -1,5 +1,3 @@
-"use server";
-
 import { getSupabaseAdmin } from "../supabase";
 
 export interface SessionMessage {

@@ -53,7 +53,7 @@ export async function createClient(input: CreateClientInput): Promise<Client> {
       name: input.name,
       slug: input.slug,
       industry: input.industry || null,
-      monthly_budget_usd: input.monthly_budget_usd || null,
+      monthly_budget_usd: input.monthly_budget_usd ?? null,
       phase: "discovery" as ClientPhase,
     })
     .select()
