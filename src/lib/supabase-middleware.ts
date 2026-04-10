@@ -29,10 +29,9 @@ export async function updateSession(request: NextRequest) {
 
   const isLoginPage = request.nextUrl.pathname === "/login";
   const isAuthCallback = request.nextUrl.pathname === "/auth/callback";
-  const isApi = request.nextUrl.pathname.startsWith("/api/");
 
-  // Allow auth callback and API routes always
-  if (isAuthCallback || isApi) return supabaseResponse;
+  // Allow auth callback only (all other routes require auth)
+  if (isAuthCallback) return supabaseResponse;
 
   // Not logged in — redirect to login (except login page itself)
   if (!user && !isLoginPage) {

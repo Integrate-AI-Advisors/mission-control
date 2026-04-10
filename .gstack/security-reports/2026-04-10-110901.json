@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "date": "2026-04-10T10:05:00Z",
+  "mode": "daily",
+  "scope": "full",
+  "diff_mode": false,
+  "phases_run": [0,1,2,3,5,6,7,8,9,10,11,12,13,14],
+  "findings": [{
+    "id": 1,
+    "severity": "CRITICAL",
+    "confidence": 9,
+    "status": "VERIFIED",
+    "phase": 9,
+    "phase_name": "OWASP A01",
+    "category": "Access Control",
+    "title": "API routes bypass auth middleware",
+    "file": "src/lib/supabase-middleware.ts",
+    "line": 35,
+    "description": "Middleware returned early for /api/* paths without auth check",
+    "exploit_scenario": "curl /api/clients returns all client data without auth",
+    "impact": "Data exfiltration + data pollution",
+    "recommendation": "Remove API bypass, convert to Server Action",
+    "verification": "independently verified"
+  }],
+  "totals": {"critical": 1, "high": 0, "medium": 0, "tentative": 0},
+  "filter_stats": {"candidates_scanned": 12, "hard_exclusion_filtered": 8, "confidence_gate_filtered": 3, "reported": 1}
+}
