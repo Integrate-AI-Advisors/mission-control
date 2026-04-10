@@ -6,17 +6,17 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const clients = await getClients();
-    return NextResponse.json({ clients });
+    return NextResponse.json(clients);
   } catch (error) {
     console.error("Error fetching clients:", error);
-    return NextResponse.json({ clients: [] }, { status: 500 });
+    return NextResponse.json([], { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, slug, industry, founder_name, founder_email, founder_phone, gateway_url, gateway_token, vps_ip, vps_port } = body;
+    const { name, slug, industry, monthly_budget_usd } = body;
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -29,16 +29,10 @@ export async function POST(request: Request) {
       name,
       slug,
       industry,
-      founder_name,
-      founder_email,
-      founder_phone,
-      gateway_url,
-      gateway_token,
-      vps_ip,
-      vps_port,
+      monthly_budget_usd,
     });
 
-    return NextResponse.json({ client }, { status: 201 });
+    return NextResponse.json(client, { status: 201 });
   } catch (error: unknown) {
     console.error("Error creating client:", error);
     const message = error instanceof Error ? error.message : "Failed to create client";

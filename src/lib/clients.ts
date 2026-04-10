@@ -21,12 +21,17 @@ export interface CreateClientInput {
 }
 
 export async function getClients(): Promise<Client[]> {
-  const { data, error } = await getSupabaseAdmin()
-    .from("clients")
-    .select("id, name, slug, industry, phase, monthly_budget_usd, phase_changed_at, created_at, updated_at")
-    .order("name", { ascending: true });
-  if (error) throw error;
-  return data || [];
+  try {
+    const { data, error } = await getSupabaseAdmin()
+      .from("clients")
+      .select("id, name, slug, industry, phase, monthly_budget_usd, phase_changed_at, created_at, updated_at")
+      .order("name", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch {
+    // Supabase not configured (build time) — return empty
+    return [];
+  }
 }
 
 export async function getClient(slug: string): Promise<Client | null> {
