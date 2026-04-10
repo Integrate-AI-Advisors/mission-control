@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0.1] - 2026-04-10
+
+### Added
+- Full Vitest test suite: 88 tests across 9 files covering utilities, types, phase logic, cost aggregation, session stats, integration health, auth routing, and server action validation
+- Playwright E2E setup with Chromium: auth redirect tests, route existence, navigation structure
+- Supabase mock factory for unit testing query modules
+- Test scripts: `npm run test:e2e` and `npm run test:all`
+
 ## [0.1.0.0] - 2026-04-10
 
 Complete rebuild of Mission Control as the IntegrateAI Client Intelligence Platform.
