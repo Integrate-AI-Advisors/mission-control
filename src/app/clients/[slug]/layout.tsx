@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getClient } from "@/lib/clients";
 import { PhaseBadge } from "@/components/phase-badge";
+import { PollingProvider } from "@/components/polling-provider";
 import type { ClientPhase } from "@/lib/types";
 
 function SubNav({ slug, children }: { slug: string; children: React.ReactNode }) {
@@ -50,8 +51,10 @@ export default async function ClientLayout({
         </div>
       </header>
 
-      {/* Sub-nav + content */}
-      <SubNav slug={params.slug}>{children}</SubNav>
+      {/* Sub-nav + content with 15s polling */}
+      <PollingProvider intervalMs={15_000}>
+        <SubNav slug={params.slug}>{children}</SubNav>
+      </PollingProvider>
     </div>
   );
 }
