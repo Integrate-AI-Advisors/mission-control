@@ -287,18 +287,6 @@ const PROVIDERS: Record<string, ProviderConfig> = {
     webhookHint:
       "In Pipedrive: Settings \u2192 Tools and integrations \u2192 Webhooks \u2192 Create new webhook, then paste this URL",
   },
-  planoly: {
-    name: "Planoly",
-    instructions: [
-      "Planoly does not currently offer a public API",
-      "Social media scheduling data can be accessed through Instagram and TikTok integrations instead",
-      "If you need Planoly data specifically, contact IntegrateAI support",
-    ],
-    fields: [],
-    hasStoreDomain: false,
-    webhookHint: "",
-    showWebhook: false,
-  },
   royal_mail: {
     name: "Royal Mail",
     priority: "useful",
