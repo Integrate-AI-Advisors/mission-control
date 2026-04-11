@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AlertTriangle, XCircle } from "lucide-react";
 import { Sidebar } from "@/components/sidebar";
 import { getClients } from "@/lib/clients";
 import { getDashboardData } from "@/lib/queries/dashboard";
@@ -6,14 +7,15 @@ import type { BusinessHealth, AlertItem, ClientSummaryRow } from "@/lib/queries/
 import { PhaseBadge } from "@/components/phase-badge";
 import { formatCurrency } from "@/lib/utils";
 import type { ClientPhase } from "@/lib/types";
+import { PHASE_COLORS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-// --- Health banner colors ---
+// --- Health banner colors (opacity /8 per brand spec) ---
 const healthBannerClasses: Record<BusinessHealth, string> = {
-  green: "border-brand-green/30 bg-brand-green/5",
-  amber: "border-brand-amber/30 bg-brand-amber/5",
-  red: "border-destructive/30 bg-destructive/5",
+  green: "border-brand-green/30 bg-brand-green/8",
+  amber: "border-brand-amber/30 bg-brand-amber/8",
+  red: "border-destructive/30 bg-destructive/8",
 };
 
 const healthDotClasses: Record<BusinessHealth, string> = {
@@ -42,6 +44,21 @@ function marginColorClass(pct: number | null): string {
   return "text-destructive";
 }
 
+// --- Section divider (brand visual heartbeat) ---
+function SectionDivider() {
+  return (
+    <div className="my-6 flex items-center justify-center gap-2">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-terra/30 animate-breathe"
+          style={{ animationDelay: `${i * 0.4}s` }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default async function DashboardPage() {
   const clients = await getClients();
   const dashboard = await getDashboardData(clients);
@@ -49,13 +66,13 @@ export default async function DashboardPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar clients={clients} />
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-5xl p-6">
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
+        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
           <h1 className="mb-6 font-serif text-2xl text-foreground">Dashboard</h1>
 
           {/* Section 1: Business Health Banner */}
           <div
-            className={`mb-6 flex items-center gap-3 rounded-lg border p-4 ${healthBannerClasses[dashboard.overallHealth]}`}
+            className={`flex items-center gap-3 rounded-lg border p-4 animate-glow-pulse ${healthBannerClasses[dashboard.overallHealth]}`}
           >
             <span
               className={`h-3 w-3 shrink-0 rounded-full animate-breathe ${healthDotClasses[dashboard.overallHealth]}`}
@@ -65,13 +82,15 @@ export default async function DashboardPage() {
             </span>
             {dashboard.overallHealth !== "green" && (
               <span className="text-xs text-muted-foreground">
-                — {dashboard.healthReason}
+                {dashboard.healthReason}
               </span>
             )}
           </div>
 
+          <SectionDivider />
+
           {/* Section 2: Revenue & Margin */}
-          <div className="mb-6 grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-lg border border-border bg-card p-4">
               <p className="brand-label mb-1">Monthly Revenue</p>
               <p className="font-mono text-2xl font-medium tracking-tight text-foreground">
@@ -103,29 +122,31 @@ export default async function DashboardPage() {
             </div>
           </div>
 
+          <SectionDivider />
+
           {/* Section 3: Pending Actions */}
-          <div className="mb-6">
-            {dashboard.pendingApprovals > 0 ? (
-              <Link
-                href="/clients"
-                className="flex items-center gap-3 rounded-lg border border-brand-amber/30 bg-brand-amber/5 p-4 transition-colors hover:bg-brand-amber/10"
-              >
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-amber animate-breathe" />
-                <span className="text-sm text-brand-amber font-medium">
-                  {dashboard.pendingApprovals} pending approval{dashboard.pendingApprovals !== 1 ? "s" : ""}
-                </span>
-                <span className="ml-auto text-xs text-muted-foreground">View clients &rarr;</span>
-              </Link>
-            ) : (
-              <div className="flex items-center gap-3 rounded-lg border border-brand-green/30 bg-brand-green/5 p-4">
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-green" />
-                <span className="text-sm text-brand-green font-medium">No pending actions</span>
-              </div>
-            )}
-          </div>
+          {dashboard.pendingApprovals > 0 ? (
+            <Link
+              href="/clients"
+              className="flex items-center gap-3 rounded-lg border border-brand-amber/30 bg-brand-amber/8 p-4 transition-colors hover:bg-brand-amber/15 animate-glow-pulse"
+            >
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-amber animate-breathe" />
+              <span className="text-sm text-brand-amber font-medium">
+                {dashboard.pendingApprovals} pending approval{dashboard.pendingApprovals !== 1 ? "s" : ""}
+              </span>
+              <span className="ml-auto text-xs text-muted-foreground">View clients &rarr;</span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-3 rounded-lg border border-brand-green/30 bg-brand-green/8 p-4">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-green" />
+              <span className="text-sm text-brand-green font-medium">No pending actions</span>
+            </div>
+          )}
+
+          <SectionDivider />
 
           {/* Section 4: Alerts (Last 24h) */}
-          <div className="mb-6">
+          <div>
             <h2 className="brand-label mb-3">Alerts (Last 24h)</h2>
             {dashboard.alerts.length === 0 ? (
               <div className="rounded-lg border border-border bg-card p-4">
@@ -148,8 +169,10 @@ export default async function DashboardPage() {
             )}
           </div>
 
+          <SectionDivider />
+
           {/* Section 5: Client Summary Table */}
-          <div className="mb-6">
+          <div>
             <h2 className="brand-label mb-3">Client Summary</h2>
             <div className="overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-sm">
@@ -180,6 +203,8 @@ export default async function DashboardPage() {
               </table>
             </div>
           </div>
+
+          <SectionDivider />
 
           {/* Section 6: Today's Activity */}
           <div className="flex flex-wrap gap-4 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
@@ -213,13 +238,15 @@ export default async function DashboardPage() {
 // --- Sub-components ---
 
 function AlertRow({ alert }: { alert: AlertItem }) {
-  const icon = alert.type === "session_failure" ? "\u26a0" : "\u25cf";
-  const iconColor = alert.type === "session_failure" ? "text-brand-amber" : "text-destructive";
   const timeStr = formatRelativeShort(alert.time);
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
-      <span className={`text-xs ${iconColor}`}>{icon}</span>
+      {alert.type === "session_failure" ? (
+        <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-brand-amber" />
+      ) : (
+        <XCircle className="h-3.5 w-3.5 shrink-0 text-destructive" />
+      )}
       <span className="text-sm text-foreground">
         <span className="font-medium">{alert.clientName}</span>{" "}
         — {alert.description}
@@ -231,7 +258,10 @@ function AlertRow({ alert }: { alert: AlertItem }) {
 
 function ClientRow({ row }: { row: ClientSummaryRow }) {
   return (
-    <tr className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
+    <tr
+      className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50 border-l-[3px]"
+      style={{ borderLeftColor: PHASE_COLORS[row.client.phase as ClientPhase] }}
+    >
       <td className="px-4 py-2.5">
         <Link
           href={`/clients/${row.client.slug}`}
@@ -245,7 +275,7 @@ function ClientRow({ row }: { row: ClientSummaryRow }) {
       </td>
       <td className="px-4 py-2.5 text-center">
         <span
-          className={`inline-block h-2 w-2 rounded-full ${healthDotClasses[row.status]}`}
+          className={`inline-block h-2 w-2 rounded-full animate-breathe ${healthDotClasses[row.status]}`}
           role="img"
           aria-label={`Status: ${row.status}`}
         />
