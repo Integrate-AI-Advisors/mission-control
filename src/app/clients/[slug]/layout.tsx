@@ -11,6 +11,7 @@ function SubNav({ slug, children }: { slug: string; children: React.ReactNode })
     { href: `/clients/${slug}/sessions`, label: "Sessions" },
     { href: `/clients/${slug}/costs`, label: "Costs" },
     { href: `/clients/${slug}/queue`, label: "Queue" },
+    { href: `/clients/${slug}/verification`, label: "Verification" },
   ];
 
   return (
