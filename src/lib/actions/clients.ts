@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/clients";
 import type { Client } from "@/lib/clients";
+import { getUser } from "@/lib/supabase-server";
 
 interface CreateClientResult {
   client?: Client;
@@ -9,6 +10,11 @@ interface CreateClientResult {
 }
 
 export async function createClientAction(formData: FormData): Promise<CreateClientResult> {
+  const user = await getUser();
+  if (!user?.email?.endsWith("@integrate-ai.uk")) {
+    return { error: "Unauthorized" };
+  }
+
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
   const industry = formData.get("industry") as string;
