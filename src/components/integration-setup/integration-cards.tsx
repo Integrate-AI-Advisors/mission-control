@@ -47,6 +47,7 @@ interface ProviderConfig {
   fields: ProviderField[];
   hasStoreDomain: boolean;
   webhookHint: string;
+  showWebhook?: boolean;
 }
 
 type DialogMode =
@@ -100,8 +101,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "client_secret", label: "Client Secret", type: "password" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "Paste this URL in Xero Developer \u2192 Webhooks \u2192 Add subscription",
+    webhookHint: "",
+    showWebhook: false,
   },
   klaviyo: {
     name: "Klaviyo",
@@ -139,8 +140,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "client_secret", label: "Client Secret", type: "password" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "Basecamp uses polling \u2014 no webhook URL needed. Events are checked automatically.",
+    webhookHint: "",
+    showWebhook: false,
   },
   cropster: {
     name: "Cropster",
@@ -155,8 +156,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "api_secret", label: "API Secret", type: "password" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "Cropster uses polling \u2014 no webhook URL needed. Data is synced automatically.",
+    webhookHint: "",
+    showWebhook: false,
   },
   dpd: {
     name: "DPD",
@@ -171,8 +172,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "account_number", label: "Account Number", type: "text" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "DPD tracking webhooks are set per-shipment automatically. No manual setup needed.",
+    webhookHint: "",
+    showWebhook: false,
   },
   google_docs: {
     name: "Google Workspace",
@@ -188,8 +189,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "client_secret", label: "Client Secret", type: "password" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "Google Drive changes are monitored automatically via the Watch API. No manual webhook setup needed.",
+    webhookHint: "",
+    showWebhook: false,
   },
   instagram: {
     name: "Instagram",
@@ -240,8 +241,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
       { key: "tenant_id", label: "Directory (Tenant) ID", type: "text" },
     ],
     hasStoreDomain: false,
-    webhookHint:
-      "Microsoft 365 webhooks are set up automatically via the Graph API. No manual webhook setup needed.",
+    webhookHint: "",
+    showWebhook: false,
   },
   pipedrive: {
     name: "Pipedrive",
@@ -267,8 +268,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
     ],
     fields: [],
     hasStoreDomain: false,
-    webhookHint:
-      "Planoly does not support webhooks. Data is accessed via connected social media APIs.",
+    webhookHint: "",
+    showWebhook: false,
   },
   royal_mail: {
     name: "Royal Mail",
@@ -614,10 +615,12 @@ export function IntegrationCards({
                   {isConnected ? "Manage" : "Connect"}
                 </Button>
               </div>
-              <WebhookUrl
-                provider={integration.provider}
-                token={integration.webhook_token}
-              />
+              {getProviderConfig(integration.provider).showWebhook !== false && (
+                <WebhookUrl
+                  provider={integration.provider}
+                  token={integration.webhook_token}
+                />
+              )}
             </div>
           );
         })}
@@ -700,10 +703,12 @@ export function IntegrationCards({
                 </p>
               )}
 
-              <WebhookUrl
-                provider={activeIntegration.provider}
-                token={activeIntegration.webhook_token}
-              />
+              {activeConfig.showWebhook !== false && (
+                <WebhookUrl
+                  provider={activeIntegration.provider}
+                  token={activeIntegration.webhook_token}
+                />
+              )}
 
               {testResult && (
                 <div
