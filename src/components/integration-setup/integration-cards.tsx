@@ -31,7 +31,7 @@ export interface SafeIntegration {
   webhook_token: string;
   store_domain: string | null;
   health_checked_at: string | null;
-  updated_at: string;
+  created_at: string;
 }
 
 interface ProviderField {
