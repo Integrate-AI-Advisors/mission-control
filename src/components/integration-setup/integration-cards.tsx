@@ -367,7 +367,7 @@ export function IntegrationCards({
       <div className="grid gap-4 sm:grid-cols-2">
         {integrations.map((integration) => {
           const config = getProviderConfig(integration.provider);
-          const isConnected = integration.status !== "not_connected";
+          const isConnected = integration.has_credentials && integration.status !== "not_connected";
 
           return (
             <div
@@ -557,6 +557,16 @@ export function IntegrationCards({
                   replace them.
                 </DialogDescription>
               </DialogHeader>
+
+              {activeConfig.instructions.length > 0 && (
+                <ol className="list-inside list-decimal space-y-1.5 text-sm text-foreground">
+                  {activeConfig.instructions.map((step, i) => (
+                    <li key={i} className="leading-relaxed">
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              )}
 
               {actionError && (
                 <p className="text-sm text-brand-red">{actionError}</p>
