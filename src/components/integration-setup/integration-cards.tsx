@@ -48,6 +48,8 @@ interface ProviderConfig {
   hasStoreDomain: boolean;
   webhookHint: string;
   showWebhook?: boolean;
+  priority: "critical" | "useful";
+  agentRole: string;
 }
 
 type DialogMode =
@@ -62,6 +64,8 @@ type DialogMode =
 const PROVIDERS: Record<string, ProviderConfig> = {
   shopify: {
     name: "Shopify",
+    priority: "critical",
+    agentRole: "CEO, CFO, COO, CRO",
     instructions: [
       "Go to your Shopify admin (yourstore.myshopify.com/admin)",
       "Click Settings \u2192 Apps and sales channels \u2192 Develop apps",
@@ -78,6 +82,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   stripe: {
     name: "Stripe",
+    priority: "critical",
+    agentRole: "CFO, CEO",
     instructions: [
       "Go to dashboard.stripe.com",
       "Click Developers \u2192 API keys",
@@ -90,6 +96,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   xero: {
     name: "Xero",
+    priority: "critical",
+    agentRole: "CFO, CEO",
     instructions: [
       "Go to developer.xero.com/app/manage",
       "Create a new app (type: Web app)",
@@ -106,6 +114,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   klaviyo: {
     name: "Klaviyo",
+    priority: "critical",
+    agentRole: "CMO, CRO",
     instructions: [
       "Go to klaviyo.com \u2192 Settings \u2192 API keys",
       "Create a new Private API key with Read access",
@@ -118,6 +128,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   skio: {
     name: "SKIO",
+    priority: "critical",
+    agentRole: "CRO, CFO",
     instructions: [
       "Go to your SKIO dashboard \u2192 Settings \u2192 API",
       "Copy your API key",
@@ -129,6 +141,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   basecamp: {
     name: "Basecamp",
+    priority: "useful",
+    agentRole: "COO",
     instructions: [
       "Go to launchpad.37signals.com/integrations and sign in",
       "Click 'Register an application'",
@@ -145,6 +159,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   cropster: {
     name: "Cropster",
+    priority: "useful",
+    agentRole: "COO",
     instructions: [
       "Log in to Cropster at c-sar.cropster.com",
       "Go to Settings \u2192 API (or contact Cropster support to request API access)",
@@ -161,6 +177,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   dpd: {
     name: "DPD",
+    priority: "useful",
+    agentRole: "COO",
     instructions: [
       "Contact your DPD UK account manager or email api@dpd.co.uk to request API access",
       "DPD will provide you with a Username, Password, and Account Number",
@@ -177,6 +195,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   google_docs: {
     name: "Google Workspace",
+    priority: "useful",
+    agentRole: "COO, CEO",
     instructions: [
       "Go to console.cloud.google.com and create a project (or select existing)",
       "Go to APIs & Services \u2192 Library, enable: Google Docs API, Google Drive API, Google Sheets API",
@@ -194,6 +214,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   instagram: {
     name: "Instagram",
+    priority: "useful",
+    agentRole: "CMO",
     instructions: [
       "Go to developers.facebook.com and sign in with your Facebook account",
       "Click My Apps \u2192 Create App \u2192 choose 'Business' type",
@@ -211,6 +233,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   lightspeed: {
     name: "Lightspeed",
+    priority: "useful",
+    agentRole: "COO, CFO",
     instructions: [
       "Go to developers.lightspeedhq.com and sign in",
       "Click Create App",
@@ -227,6 +251,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   office365: {
     name: "Microsoft 365",
+    priority: "useful",
+    agentRole: "COO, CEO",
     instructions: [
       "Go to entra.microsoft.com and sign in with your Microsoft 365 admin account",
       "Go to App registrations \u2192 New registration",
@@ -246,6 +272,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   pipedrive: {
     name: "Pipedrive",
+    priority: "critical",
+    agentRole: "CMO, CRO, CEO",
     instructions: [
       "Log in to Pipedrive at app.pipedrive.com",
       "Click your profile icon (top-right) \u2192 Personal preferences",
@@ -273,6 +301,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   royal_mail: {
     name: "Royal Mail",
+    priority: "useful",
+    agentRole: "COO",
     instructions: [
       "Go to developer.royalmail.net and register a developer account (requires business details)",
       "Once approved, go to My Apps \u2192 Create Application",
@@ -290,6 +320,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   slack: {
     name: "Slack",
+    priority: "useful",
+    agentRole: "All agents",
     instructions: [
       "Go to api.slack.com/apps \u2192 Create New App \u2192 From scratch",
       "Give it a name and select your workspace",
@@ -308,6 +340,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   tiktok: {
     name: "TikTok",
+    priority: "useful",
+    agentRole: "CMO",
     instructions: [
       "Go to developers.tiktok.com \u2192 Manage apps \u2192 Create a new app",
       "Choose the products you need (Content Posting API, Marketing API, etc.)",
@@ -325,6 +359,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
   },
   wordpress: {
     name: "WordPress",
+    priority: "useful",
+    agentRole: "CMO",
     instructions: [
       "Log in to your WordPress admin at yoursite.com/wp-admin",
       "Go to Users \u2192 Profile, scroll down to Application Passwords",
@@ -344,6 +380,8 @@ const PROVIDERS: Record<string, ProviderConfig> = {
 
 const DEFAULT_PROVIDER: ProviderConfig = {
   name: "Unknown",
+  priority: "useful",
+  agentRole: "",
   instructions: [],
   fields: [{ key: "api_key", label: "API Key", type: "password" }],
   hasStoreDomain: false,
@@ -578,15 +616,32 @@ export function IntegrationCards({
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {integrations.map((integration) => {
+      {/* Critical integrations first, then useful */}
+      {(["critical", "useful"] as const).map((tier) => {
+        const tierIntegrations = integrations.filter(
+          (i) => getProviderConfig(i.provider).priority === tier
+        );
+        if (tierIntegrations.length === 0) return null;
+        return (
+          <div key={tier} className="space-y-3">
+            <h3 className={cn(
+              "text-xs font-semibold uppercase tracking-wider",
+              tier === "critical" ? "text-brand-red" : "text-muted-foreground"
+            )}>
+              {tier === "critical" ? "Critical — Connect First" : "Useful — Connect When Ready"}
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+      {tierIntegrations.map((integration) => {
           const config = getProviderConfig(integration.provider);
           const isConnected = integration.has_credentials && integration.status !== "not_connected";
 
           return (
             <div
               key={integration.id}
-              className="rounded-lg border border-border p-4"
+              className={cn(
+                "rounded-lg border p-4",
+                tier === "critical" ? "border-brand-red/30" : "border-border"
+              )}
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
@@ -596,6 +651,11 @@ export function IntegrationCards({
                     </span>
                     <StatusBadge status={integration.status} />
                   </div>
+                  {config.agentRole && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Used by: {config.agentRole}
+                    </p>
+                  )}
                   {integration.store_domain && (
                     <p className="mt-0.5 truncate text-sm text-muted-foreground">
                       {integration.store_domain}
@@ -624,7 +684,10 @@ export function IntegrationCards({
             </div>
           );
         })}
-      </div>
+            </div>
+          </div>
+        );
+      })}
 
       {/* Shared dialog */}
       <Dialog
