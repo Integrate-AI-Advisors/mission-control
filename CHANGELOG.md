@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.1.0] - 2026-04-11
+
+### Added
+- Verification tab on client deep dive page: 30-day rolling score, per-role breakdown with progress bars, Recharts trend chart with 98% gate reference line, recent verified sessions table, and Operations Phase Gate checklist
+- 5 Supabase query functions for verification data (rolling score, by-role, history, recent sessions, phase gate status)
+- 23 Vitest tests covering trend computation, phase gate logic, score thresholds, and aggregation
+- Loading skeleton for verification page
+
+### Changed
+- Chart colors use CSS custom properties (var(--terra), var(--green)) instead of hardcoded hex values
+- Extracted MS_PER_DAY constant to eliminate magic number repetition in query file
+- Phase gate computation reuses rolling score data instead of making a duplicate DB query
+
+### Fixed
+- Chart X-axis date labels off-by-one for negative-UTC timezones (parse as local time, not UTC midnight)
+- Security reports directory (.gstack/) removed from git tracking and added to .gitignore
+
 ## [0.1.0.1] - 2026-04-10
 
 ### Added
