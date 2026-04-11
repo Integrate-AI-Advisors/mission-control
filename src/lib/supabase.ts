@@ -26,8 +26,9 @@ export function getSupabaseAdmin(): SupabaseClient {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
-    // Fall back to anon key if service role not available
-    return getSupabase();
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is required for admin operations"
+    );
   }
 
   _supabaseAdmin = createClient(url, key);

@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.2.0.0] - 2026-04-11
+
+### Added
+- Integrations tab on client deep dive page: card grid with status badges, connect/manage/disconnect flows, provider-specific setup instructions for Shopify, Stripe, Xero, Klaviyo, and SKIO
+- AES-256-GCM encryption module for storing API credentials (server-only, matching platform key format)
+- Server Actions for integration management: connect with encrypted credential storage, disconnect with credential clearing, health check via platform API
+- Webhook URL display with copy button and provider-specific configuration hints
+- Dialog-based connect flow with numbered setup instructions, masked credential fields with show/hide toggle, and store domain input for Shopify
+- Manage dialog with connection test, credential update, and disconnect confirmation
+- 19 new tests: encryption round-trip, random IV, key validation, server action CRUD, webhook URL construction
+- Auth guards on all server actions (getUser() verification with @integrate-ai.uk domain check)
+- UUID validation on integration IDs in health check endpoint to prevent path traversal
+
+### Changed
+- getSupabaseAdmin() now throws when SUPABASE_SERVICE_ROLE_KEY is missing instead of silently falling back to anon key
+- ENCRYPTION_KEY validates both length and hex format (rejects non-hex characters)
+- Platform API health check response status validated against allowlist before DB write
+- Health check Supabase write errors now surfaced to caller instead of silently swallowed
+
+### Fixed
+- Open redirect in auth callback: next parameter now validated (must start with / and not //)
+
+### Security
+- Encrypted credentials stripped at server boundary before passing to client components
+- All credential input fields are password-type with explicit show/hide toggle
+- .gitignore updated to cover bare .env files (previously only .env*.local was covered)
+
 ## [0.1.1.0] - 2026-04-11
 
 ### Added

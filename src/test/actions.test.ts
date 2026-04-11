@@ -16,6 +16,11 @@ vi.mock("@/lib/supabase", () => ({
 // Mock server-only (no-op in tests)
 vi.mock("server-only", () => ({}));
 
+// Mock auth for server actions
+vi.mock("@/lib/supabase-server", () => ({
+  getUser: vi.fn(() => Promise.resolve({ email: "test@integrate-ai.uk" })),
+}));
+
 import { createClientAction } from "@/lib/actions/clients";
 
 function makeFormData(fields: Record<string, string>): FormData {
