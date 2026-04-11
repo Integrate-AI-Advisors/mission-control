@@ -20,7 +20,7 @@ export interface IntegrationDetail {
   webhook_token: string;
   store_domain: string | null;
   health_checked_at: string | null;
-  updated_at: string;
+  created_at: string;
 }
 
 export async function getIntegrations(clientId: string): Promise<Integration[]> {
@@ -39,7 +39,7 @@ export async function getIntegrationDetails(
   const { data, error } = await getSupabaseAdmin()
     .from("integrations")
     .select(
-      "id, client_id, service, health_status, credentials_encrypted, webhook_token, store_domain, health_checked_at, updated_at"
+      "id, client_id, service, health_status, credentials_encrypted, webhook_token, store_domain, health_checked_at, created_at"
     )
     .eq("client_id", clientId)
     .order("service", { ascending: true });
