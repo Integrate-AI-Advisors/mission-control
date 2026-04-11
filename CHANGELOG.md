@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.1.0] - 2026-04-11
+
+### Changed
+- Sidebar is now fully responsive: 240px on desktop, 64px icon rail on tablet, slide-in overlay with hamburger on mobile
+- Sidebar uses frosted glass treatment (backdrop-blur, terra accent border) per brand spec
+- Logo updated to 8-dot 4x2 matrix with alternating terra and dark brown tones
+- Favicon updated to match new logo pattern
+- Dashboard sections separated by animated 3-dot terra dividers (visual heartbeat)
+- Health banner and pending actions card pulse with glow-pulse animation
+- Client summary table rows have phase-coloured left accent bars
+- Status dots in client table now breathe (animate-breathe)
+- Alert icons replaced with Lucide SVG (AlertTriangle, XCircle) instead of Unicode
+- Background opacities bumped from /5 to /8 per brand spec
+- Revenue cards explicitly stack single-column on mobile (grid-cols-1)
+- Mobile content has tighter padding (px-4) and hamburger clearance (pt-14)
+
+### Fixed
+- Sidebar touch targets bumped to 44px minimum on all interactive elements
+- Mobile drawer now locks body scroll, handles Escape key, and moves focus to close button
+- Backdrop has accessible role="button" and aria-label for screen readers
+- Nav links have aria-label for icon-only tablet mode
+
 ## [0.3.0.0] - 2026-04-11
 
 ### Added
