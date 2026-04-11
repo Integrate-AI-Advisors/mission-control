@@ -17,3 +17,6 @@ Key routing rules:
 - Architecture review → invoke plan-eng-review
 - Save progress, checkpoint, resume → invoke checkpoint
 - Code quality, health check → invoke health
+
+## Simplicity Rule
+No features beyond what was asked. No abstractions for single-use code. No "flexibility" that wasn't requested. If you write 200 lines and it could be 50, rewrite it.
