@@ -27,6 +27,32 @@ export function Sidebar({ clients }: { clients: Client[] }) {
         </span>
       </div>
 
+      {/* Navigation */}
+      <nav className="space-y-0.5 border-b border-border px-2 py-3">
+        <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-2.5 rounded-md px-2.5 py-2.5 text-sm transition-colors",
+            pathname === "/"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+          )}
+        >
+          Dashboard
+        </Link>
+        <Link
+          href="/clients"
+          className={cn(
+            "flex items-center gap-2.5 rounded-md px-2.5 py-2.5 text-sm transition-colors",
+            pathname === "/clients"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+          )}
+        >
+          Clients
+        </Link>
+      </nav>
+
       {/* Client list */}
       <div className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide">
         <p className="brand-label mb-2 px-2">
