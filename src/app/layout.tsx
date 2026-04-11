@@ -39,7 +39,7 @@ export default function RootLayout({
       <head>
         <link
           rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a19'/><circle cx='8' cy='11' r='3' fill='%23d97757'/><circle cx='18' cy='11' r='3' fill='%23d97757' opacity='.4'/><circle cx='8' cy='21' r='3' fill='%23d97757' opacity='.2'/><circle cx='18' cy='21' r='3' fill='%23d97757'/></svg>"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a19'/><circle cx='4' cy='10' r='2.5' fill='%23d97757'/><circle cx='12' cy='10' r='2.5' fill='%234A2E24'/><circle cx='20' cy='10' r='2.5' fill='%23d97757'/><circle cx='28' cy='10' r='2.5' fill='%236B3D2E'/><circle cx='4' cy='20' r='2.5' fill='%236B3D2E'/><circle cx='12' cy='20' r='2.5' fill='%23d97757'/><circle cx='20' cy='20' r='2.5' fill='%234A2E24'/><circle cx='28' cy='20' r='2.5' fill='%23d97757'/></svg>"
           type="image/svg+xml"
         />
       </head>
