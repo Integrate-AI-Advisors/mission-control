@@ -126,6 +126,219 @@ const PROVIDERS: Record<string, ProviderConfig> = {
     webhookHint:
       "Add this URL as a webhook endpoint in your SKIO settings",
   },
+  basecamp: {
+    name: "Basecamp",
+    instructions: [
+      "Go to launchpad.37signals.com/integrations and sign in",
+      "Click 'Register an application'",
+      "Fill in app name ('IntegrateAI'), your website URL, and set Redirect URI to: https://api.integrate-ai.uk/oauth/basecamp/callback",
+      "Copy the Client ID and Client Secret",
+    ],
+    fields: [
+      { key: "client_id", label: "Client ID", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "Basecamp uses polling \u2014 no webhook URL needed. Events are checked automatically.",
+  },
+  cropster: {
+    name: "Cropster",
+    instructions: [
+      "Log in to Cropster at c-sar.cropster.com",
+      "Go to Settings \u2192 API (or contact Cropster support to request API access)",
+      "Cropster will issue you a Group API Key and API Secret",
+      "Copy both values",
+    ],
+    fields: [
+      { key: "api_key", label: "API Key", type: "password" },
+      { key: "api_secret", label: "API Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "Cropster uses polling \u2014 no webhook URL needed. Data is synced automatically.",
+  },
+  dpd: {
+    name: "DPD",
+    instructions: [
+      "Contact your DPD UK account manager or email api@dpd.co.uk to request API access",
+      "DPD will provide you with a Username, Password, and Account Number",
+      "Copy all three values",
+    ],
+    fields: [
+      { key: "username", label: "DPD Username", type: "text" },
+      { key: "password", label: "DPD Password", type: "password" },
+      { key: "account_number", label: "Account Number", type: "text" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "DPD tracking webhooks are set per-shipment automatically. No manual setup needed.",
+  },
+  google_docs: {
+    name: "Google Workspace",
+    instructions: [
+      "Go to console.cloud.google.com and create a project (or select existing)",
+      "Go to APIs & Services \u2192 Library, enable: Google Docs API, Google Drive API, Google Sheets API",
+      "Go to APIs & Services \u2192 Credentials \u2192 Create Credentials \u2192 OAuth client ID",
+      "Choose 'Web application', set redirect URI to: https://api.integrate-ai.uk/oauth/google/callback",
+      "Copy the Client ID and Client Secret",
+    ],
+    fields: [
+      { key: "client_id", label: "Client ID", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "Google Drive changes are monitored automatically via the Watch API. No manual webhook setup needed.",
+  },
+  instagram: {
+    name: "Instagram",
+    instructions: [
+      "Go to developers.facebook.com and sign in with your Facebook account",
+      "Click My Apps \u2192 Create App \u2192 choose 'Business' type",
+      "In the app dashboard, find 'Instagram Graph API' and click Set Up",
+      "Go to Settings \u2192 Basic to find your App ID and App Secret",
+      "The Instagram account must be a Business account linked to a Facebook Page",
+    ],
+    fields: [
+      { key: "app_id", label: "Meta App ID", type: "text" },
+      { key: "app_secret", label: "Meta App Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "In Meta App Dashboard \u2192 Products \u2192 Webhooks \u2192 Instagram \u2192 Subscribe, then paste this URL",
+  },
+  lightspeed: {
+    name: "Lightspeed",
+    instructions: [
+      "Go to developers.lightspeedhq.com and sign in",
+      "Click Create App",
+      "Set redirect URI to: https://api.integrate-ai.uk/oauth/lightspeed/callback",
+      "Copy the Client ID and Client Secret",
+    ],
+    fields: [
+      { key: "client_id", label: "Client ID", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "For Lightspeed eCom: go to admin \u2192 Settings \u2192 Webhooks and paste this URL",
+  },
+  office365: {
+    name: "Microsoft 365",
+    instructions: [
+      "Go to entra.microsoft.com and sign in with your Microsoft 365 admin account",
+      "Go to App registrations \u2192 New registration",
+      "Set redirect URI to: https://api.integrate-ai.uk/oauth/microsoft/callback (type: Web)",
+      "Copy the Application (client) ID and Directory (tenant) ID from the overview page",
+      "Go to Certificates & secrets \u2192 New client secret \u2192 copy the secret value immediately",
+      "Go to API permissions \u2192 Add Microsoft Graph permissions you need (e.g. Mail.Read, Calendars.ReadWrite)",
+    ],
+    fields: [
+      { key: "client_id", label: "Application (Client) ID", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+      { key: "tenant_id", label: "Directory (Tenant) ID", type: "text" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "Microsoft 365 webhooks are set up automatically via the Graph API. No manual webhook setup needed.",
+  },
+  pipedrive: {
+    name: "Pipedrive",
+    instructions: [
+      "Log in to Pipedrive at app.pipedrive.com",
+      "Click your profile icon (top-right) \u2192 Personal preferences",
+      "Go to the API tab",
+      "Copy your Personal API token",
+    ],
+    fields: [
+      { key: "api_token", label: "Personal API Token", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "In Pipedrive: Settings \u2192 Tools and integrations \u2192 Webhooks \u2192 Create new webhook, then paste this URL",
+  },
+  planoly: {
+    name: "Planoly",
+    instructions: [
+      "Planoly does not currently offer a public API",
+      "Social media scheduling data can be accessed through Instagram and TikTok integrations instead",
+      "If you need Planoly data specifically, contact IntegrateAI support",
+    ],
+    fields: [],
+    hasStoreDomain: false,
+    webhookHint:
+      "Planoly does not support webhooks. Data is accessed via connected social media APIs.",
+  },
+  royal_mail: {
+    name: "Royal Mail",
+    instructions: [
+      "Go to developer.royalmail.net and register a developer account (requires business details)",
+      "Once approved, go to My Apps \u2192 Create Application",
+      "Select the API products you need (Shipping API, Tracking API)",
+      "After approval, copy your Client ID and Client Secret from the app detail page",
+      "Note: approval can take several business days",
+    ],
+    fields: [
+      { key: "client_id", label: "Client ID", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "Royal Mail Tracking push notifications are configured in the developer portal under your app settings",
+  },
+  slack: {
+    name: "Slack",
+    instructions: [
+      "Go to api.slack.com/apps \u2192 Create New App \u2192 From scratch",
+      "Give it a name and select your workspace",
+      "Go to OAuth & Permissions \u2192 add Bot Token Scopes (chat:write, channels:read, channels:history)",
+      "Click Install to Workspace and authorize",
+      "Copy the Bot User OAuth Token (starts with xoxb-)",
+      "Go to Basic Information \u2192 copy the Signing Secret",
+    ],
+    fields: [
+      { key: "bot_token", label: "Bot Token (xoxb-...)", type: "password" },
+      { key: "signing_secret", label: "Signing Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "In Slack App Dashboard \u2192 Event Subscriptions \u2192 toggle ON \u2192 paste this URL as the Request URL",
+  },
+  tiktok: {
+    name: "TikTok",
+    instructions: [
+      "Go to developers.tiktok.com \u2192 Manage apps \u2192 Create a new app",
+      "Choose the products you need (Content Posting API, Marketing API, etc.)",
+      "Fill in app details, privacy policy URL, and terms of service URL",
+      "Submit for review (TikTok manually reviews all apps \u2014 can take days)",
+      "Once approved, copy your Client Key and Client Secret",
+    ],
+    fields: [
+      { key: "client_key", label: "Client Key (App ID)", type: "text" },
+      { key: "client_secret", label: "Client Secret", type: "password" },
+    ],
+    hasStoreDomain: false,
+    webhookHint:
+      "In TikTok Developer app settings \u2192 Webhooks section \u2192 add this as your Callback URL",
+  },
+  wordpress: {
+    name: "WordPress",
+    instructions: [
+      "Log in to your WordPress admin at yoursite.com/wp-admin",
+      "Go to Users \u2192 Profile, scroll down to Application Passwords",
+      "Enter 'IntegrateAI' as the application name",
+      "Click Add New Application Password and copy it immediately (shown only once)",
+      "If using WooCommerce: go to WooCommerce \u2192 Settings \u2192 Advanced \u2192 REST API \u2192 Add key",
+    ],
+    fields: [
+      { key: "username", label: "WordPress Username", type: "text" },
+      { key: "application_password", label: "Application Password", type: "password" },
+    ],
+    hasStoreDomain: true,
+    webhookHint:
+      "For WooCommerce: go to WooCommerce \u2192 Settings \u2192 Advanced \u2192 Webhooks \u2192 Add webhook, then paste this URL",
+  },
 };
 
 const DEFAULT_PROVIDER: ProviderConfig = {
