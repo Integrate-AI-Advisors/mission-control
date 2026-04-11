@@ -22,6 +22,9 @@ export type SessionStatus = "running" | "completed" | "failed" | "cancelled";
 // Integration health
 export type HealthStatus = "healthy" | "degraded" | "down" | "unknown";
 
+// Integration connection status
+export type IntegrationStatus = "not_connected" | "healthy" | "degraded" | "down";
+
 // Approval lifecycle
 export type ApprovalStatus = "pending" | "approved" | "executing" | "done" | "declined";
 
