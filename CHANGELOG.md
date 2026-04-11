@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.0.0] - 2026-04-11
+
+### Added
+- Founder dashboard at / replaces the redirect with a single-screen business overview
+- Business health banner with green/amber/red status based on session failure rates and integration health
+- Revenue and margin cards: MRR, API costs (MTD), gross margin percentage with projected monthly cost
+- Pending actions indicator linking to the approval queue
+- Alerts section showing failed sessions and down integrations from the last 24 hours
+- Client summary table with phase, status, sessions, cost, budget, and margin per client
+- Today's activity footer with session count, cost, and average verification score
+- Dashboard and Clients navigation links in the sidebar
+- monthly_retainer_usd column on clients table (Supabase migration) for margin calculation
+- Root-level error boundary (error.tsx) for the dashboard page
+- 22 new tests: margin calculation (including zero/negative retainer), health status thresholds, projected cost edge cases, IntegrateAI filtering
+- Dashboard query module (lib/queries/dashboard.ts) with parallel batch queries and in-memory aggregation
+
+### Changed
+- Client interface now includes monthly_retainer_usd field
+- getClients() and getClient() select the new retainer field
+- Sidebar component includes top-level navigation with 44px touch targets
+- IntegrateAI (platform operator) excluded from client summary, MRR, cost totals, and health calculations
+
 ## [0.2.0.0] - 2026-04-11
 
 ### Added

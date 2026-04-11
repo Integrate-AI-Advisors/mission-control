@@ -8,6 +8,7 @@ export interface Client {
   industry: string | null;
   phase: ClientPhase;
   monthly_budget_usd: number | null;
+  monthly_retainer_usd: number | null;
   phase_changed_at: string | null;
   created_at: string;
   updated_at: string;
@@ -24,7 +25,7 @@ export async function getClients(): Promise<Client[]> {
   try {
     const { data, error } = await getSupabaseAdmin()
       .from("clients")
-      .select("id, name, slug, industry, phase, monthly_budget_usd, phase_changed_at, created_at, updated_at")
+      .select("id, name, slug, industry, phase, monthly_budget_usd, monthly_retainer_usd, phase_changed_at, created_at, updated_at")
       .order("name", { ascending: true });
     if (error) throw error;
     return data || [];
@@ -39,7 +40,7 @@ export async function getClients(): Promise<Client[]> {
 export async function getClient(slug: string): Promise<Client | null> {
   const { data, error } = await getSupabaseAdmin()
     .from("clients")
-    .select("id, name, slug, industry, phase, monthly_budget_usd, phase_changed_at, created_at, updated_at")
+    .select("id, name, slug, industry, phase, monthly_budget_usd, monthly_retainer_usd, phase_changed_at, created_at, updated_at")
     .eq("slug", slug)
     .single();
   if (error && error.code !== "PGRST116") throw error;
