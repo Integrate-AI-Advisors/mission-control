@@ -27,7 +27,7 @@ export default async function IntegrationsPage({
 
   if (safeIntegrations.length === 0) {
     return (
-      <div className="p-6">
+      <div className="px-4 py-6 sm:px-6">
         <div className="rounded-lg border border-border p-8 text-center">
           <p className="font-serif text-lg text-foreground">
             No integrations configured
@@ -41,7 +41,7 @@ export default async function IntegrationsPage({
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 px-4 py-6 sm:px-6">
       <div>
         <p className="brand-label mb-1">Client Integrations</p>
         <p className="text-sm text-muted-foreground">

@@ -28,7 +28,7 @@ export default async function QueuePage({
   const others = approvals.filter((a) => a.status !== "pending");
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-4 flex items-center justify-between">
         <p className="brand-label">Approval Queue</p>
         <p className="text-xs text-muted-foreground">{pending.length} pending</p>
@@ -47,7 +47,7 @@ export default async function QueuePage({
           {pending.map((item) => (
             <div
               key={item.id}
-              className="rounded-lg border border-brand-amber/20 bg-brand-amber/5 p-4"
+              className="rounded-lg border border-brand-amber/20 bg-brand-amber/8 p-4"
             >
               <div className="flex items-start justify-between">
                 <div>

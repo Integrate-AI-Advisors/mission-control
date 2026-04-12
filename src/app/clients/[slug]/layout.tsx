@@ -17,12 +17,12 @@ function SubNav({ slug, children }: { slug: string; children: React.ReactNode })
 
   return (
     <div className="flex h-full flex-col">
-      <nav className="flex gap-1 border-b border-border px-6">
+      <nav className="flex gap-1 overflow-x-auto border-b border-border px-4 sm:px-6 scrollbar-hide">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="relative px-3 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground [&.active]:text-primary"
+            className="relative shrink-0 px-3 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground [&.active]:text-primary"
           >
             {link.label}
           </Link>
@@ -46,7 +46,7 @@ export default async function ClientLayout({
   return (
     <div className="flex h-full flex-col">
       {/* Client header */}
-      <header className="flex items-center justify-between border-b border-border px-6 py-4">
+      <header className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-6">
         <div className="flex items-center gap-3">
           <h1 className="font-serif text-xl text-foreground">{client.name}</h1>
           <PhaseBadge phase={client.phase as ClientPhase} />

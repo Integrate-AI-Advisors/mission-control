@@ -44,9 +44,9 @@ export default async function ClientsPage() {
   );
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-serif text-2xl text-foreground">Clients</h1>
+        <h1 className="pt-2 font-serif text-2xl text-foreground md:pt-0">Clients</h1>
         <Link href="/clients/new">
           <Button variant="outline" size="sm">
             + Add Client

@@ -68,11 +68,11 @@ export default async function DashboardPage() {
       <Sidebar clients={clients} />
       <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-          <h1 className="mb-6 font-serif text-2xl text-foreground">Dashboard</h1>
+          <h1 className="mb-6 pt-2 font-serif text-2xl text-foreground md:pt-0">Dashboard</h1>
 
           {/* Section 1: Business Health Banner */}
           <div
-            className={`flex items-center gap-3 rounded-lg border p-4 animate-glow-pulse ${healthBannerClasses[dashboard.overallHealth]}`}
+            className={`flex items-center gap-3 rounded-lg border p-4 ${healthBannerClasses[dashboard.overallHealth]}`}
           >
             <span
               className={`h-3 w-3 shrink-0 rounded-full animate-breathe ${healthDotClasses[dashboard.overallHealth]}`}
@@ -128,7 +128,7 @@ export default async function DashboardPage() {
           {dashboard.pendingApprovals > 0 ? (
             <Link
               href="/clients"
-              className="flex items-center gap-3 rounded-lg border border-brand-amber/30 bg-brand-amber/8 p-4 transition-colors hover:bg-brand-amber/15 animate-glow-pulse"
+              className="flex items-center gap-3 rounded-lg border border-brand-amber/30 bg-brand-amber/8 p-4 transition-colors hover:bg-brand-amber/15"
             >
               <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-amber animate-breathe" />
               <span className="text-sm text-brand-amber font-medium">
@@ -258,11 +258,11 @@ function AlertRow({ alert }: { alert: AlertItem }) {
 
 function ClientRow({ row }: { row: ClientSummaryRow }) {
   return (
-    <tr
-      className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50 border-l-[3px]"
-      style={{ borderLeftColor: PHASE_COLORS[row.client.phase as ClientPhase] }}
-    >
-      <td className="px-4 py-2.5">
+    <tr className="border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
+      <td
+        className="border-l-[3px] px-4 py-2.5"
+        style={{ borderLeftColor: PHASE_COLORS[row.client.phase as ClientPhase] }}
+      >
         <Link
           href={`/clients/${row.client.slug}`}
           className="font-medium text-foreground hover:text-primary"

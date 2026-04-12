@@ -74,7 +74,7 @@ export default async function VerificationPage({
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 px-4 py-6 sm:px-6">
       {/* Score card */}
       <div className="rounded-lg border border-border p-4">
         <div className="flex items-start justify-between">
