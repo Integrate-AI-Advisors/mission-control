@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users, Menu, X, Plus } from "lucide-react";
@@ -11,7 +11,7 @@ import { PHASE_COLORS } from "@/lib/types";
 
 function Logo() {
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background">
+    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1A1614]">
       <svg viewBox="0 0 40 24" className="h-5 w-8">
         <circle cx="5" cy="7" r="3" fill="#D97757" />
         <circle cx="15" cy="7" r="3" fill="#4A2E24" />

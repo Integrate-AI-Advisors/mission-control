@@ -12,7 +12,7 @@ export function StatCard({ label, value, subtext, alert }: StatCardProps) {
     <div
       className={cn(
         "rounded-lg border border-border bg-card p-4",
-        alert && "border-destructive/30 bg-destructive/5"
+        alert && "border-destructive/30 bg-destructive/8"
       )}
     >
       <p className="brand-label mb-1">{label}</p>

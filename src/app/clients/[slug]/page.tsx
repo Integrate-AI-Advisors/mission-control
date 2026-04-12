@@ -59,10 +59,10 @@ export default async function ClientOverviewPage({
     : false;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 px-4 py-6 sm:px-6">
       {/* Over-budget alert */}
       {overBudget && client.monthly_budget_usd && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/8 px-4 py-3">
           <p className="text-sm font-medium text-destructive">
             {client.name} is {Math.round(((monthSpend - client.monthly_budget_usd) / client.monthly_budget_usd) * 100)}% over budget this month ({formatCurrency(monthSpend)} / {formatCurrency(client.monthly_budget_usd)})
           </p>
@@ -124,7 +124,7 @@ export default async function ClientOverviewPage({
                   <TableRow
                     key={session.id}
                     className={cn(
-                      session.status === "failed" && "bg-brand-red/5"
+                      session.status === "failed" && "bg-brand-red/8"
                     )}
                   >
                     <TableCell className="text-sm">{session.role}</TableCell>

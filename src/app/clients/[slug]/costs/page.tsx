@@ -41,7 +41,7 @@ export default async function CostsPage({
   }, {});
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 px-4 py-6 sm:px-6">
       {/* Budget utilization */}
       {client.monthly_budget_usd && (
         <div className="rounded-lg border border-border p-4">

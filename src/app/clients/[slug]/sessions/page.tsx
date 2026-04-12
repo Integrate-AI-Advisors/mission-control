@@ -43,7 +43,7 @@ export default async function SessionsPage({
   const totalPages = Math.ceil(count / 50);
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-4 flex items-center justify-between">
         <p className="brand-label">Session History</p>
         <p className="text-xs text-muted-foreground">{count} total sessions</p>
@@ -60,7 +60,7 @@ export default async function SessionsPage({
         </div>
       ) : (
         <>
-          <div className="rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -79,7 +79,7 @@ export default async function SessionsPage({
                     key={session.id}
                     className={cn(
                       "cursor-pointer hover:bg-secondary/50",
-                      session.status === "failed" && "bg-brand-red/5"
+                      session.status === "failed" && "bg-brand-red/8"
                     )}
                   >
                     <TableCell className="text-sm">{session.role}</TableCell>
