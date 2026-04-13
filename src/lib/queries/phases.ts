@@ -585,3 +585,122 @@ export function computeDiscoveryProgress(
 
   return { data: dataComplete, questions: questionsPct, vault: vaultPct, overall };
 }
+
+// -- Overview hero helpers --
+
+export interface SessionsByRole {
+  role: string;
+  count: number;
+}
+
+export async function getWeeklySessionsByRole(clientId: string): Promise<SessionsByRole[]> {
+  const since = new Date(Date.now() - 7 * MS_PER_DAY).toISOString();
+  const { data, error } = await getSupabaseAdmin()
+    .from("agent_sessions")
+    .select("role")
+    .eq("client_id", clientId)
+    .eq("status", "completed")
+    .gte("started_at", since);
+  if (error) throw error;
+
+  const counts: Record<string, number> = {};
+  for (const s of data || []) {
+    counts[s.role] = (counts[s.role] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([role, count]) => ({ role, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+export async function getWeeklyCost(clientId: string): Promise<number> {
+  const since = new Date(Date.now() - 7 * MS_PER_DAY).toISOString();
+  const { data, error } = await getSupabaseAdmin()
+    .from("agent_sessions")
+    .select("total_cost_usd")
+    .eq("client_id", clientId)
+    .gte("started_at", since);
+  if (error) throw error;
+  return (data || []).reduce((sum, s) => sum + (s.total_cost_usd || 0), 0);
+}
+
+export async function getThirtyDayStats(clientId: string): Promise<{
+  sessions: number;
+  cost: number;
+  actionsExecuted: number;
+}> {
+  const since = new Date(Date.now() - 30 * MS_PER_DAY).toISOString();
+
+  const [sessionsResult, actionsResult] = await Promise.all([
+    getSupabaseAdmin()
+      .from("agent_sessions")
+      .select("total_cost_usd")
+      .eq("client_id", clientId)
+      .eq("status", "completed")
+      .gte("started_at", since),
+    getSupabaseAdmin()
+      .from("approval_queue")
+      .select("id", { count: "exact", head: true })
+      .eq("client_id", clientId)
+      .eq("status", "done")
+      .gte("created_at", since),
+  ]);
+
+  if (sessionsResult.error) throw sessionsResult.error;
+  if (actionsResult.error) throw actionsResult.error;
+
+  const sessions = sessionsResult.data || [];
+  return {
+    sessions: sessions.length,
+    cost: sessions.reduce((sum, s) => sum + (s.total_cost_usd || 0), 0),
+    actionsExecuted: actionsResult.count || 0,
+  };
+}
+
+// -- Phase progress helpers --
+
+export const PHASE_TARGET_DAYS: Record<string, number | null> = {
+  discovery: 7,
+  dashboard: 14,
+  intelligence: 14,
+  operations: null, // ongoing
+};
+
+export const PHASE_SUBTITLES: Record<string, (name: string) => string> = {
+  discovery: (name) => `Getting to know ${name}`,
+  dashboard: () => "Building monitoring baseline",
+  intelligence: () => "Finding opportunities",
+  operations: () => "Running autonomously",
+};
+
+export function computePhaseState(
+  phase: string,
+  currentPhase: string,
+  history: PhaseHistoryEntry[]
+): { state: "completed" | "current" | "future"; daysInPhase: number | null } {
+  const phaseOrder = ["discovery", "dashboard", "intelligence", "operations"];
+  const currentIdx = phaseOrder.indexOf(currentPhase);
+  const phaseIdx = phaseOrder.indexOf(phase);
+
+  if (phaseIdx < currentIdx) {
+    // Completed
+    const entry = history.find((h) => h.phase === phase);
+    if (entry && entry.exited_at) {
+      const days = Math.floor(
+        (new Date(entry.exited_at).getTime() - new Date(entry.entered_at).getTime()) / MS_PER_DAY
+      );
+      return { state: "completed", daysInPhase: days };
+    }
+    return { state: "completed", daysInPhase: null };
+  } else if (phaseIdx === currentIdx) {
+    const entry = history.find((h) => h.phase === phase && !h.exited_at);
+    if (entry) {
+      const days = Math.floor(
+        (Date.now() - new Date(entry.entered_at).getTime()) / MS_PER_DAY
+      );
+      return { state: "current", daysInPhase: days };
+    }
+    return { state: "current", daysInPhase: 0 };
+  } else {
+    return { state: "future", daysInPhase: null };
+  }
+}
